@@ -19,9 +19,14 @@ const AnimatedCard = () => {
   const [backColor, setBackColor] = useState<string>('rgb(245, 214, 179)');
   const ticking = useRef(false);
   
-  // Add state for title and subtitle positions
+  // Add state for title, subtitle and profile positions
   const [titlePos, setTitlePos] = useState({ x: 0, y: 0 });
   const [subtitlePos, setSubtitlePos] = useState({ x: 0, y: 0 });
+  const [profilePos, setProfilePos] = useState({ x: 0, y: 0 });
+  
+  // Track if social links should be rendered at all
+  const [showSocialLinks, setShowSocialLinks] = useState(false);
+  const [contactLinksActive, setContactLinksActive] = useState(false);
 
   // Add reference for contact face
   const contactFaceRef = useRef<HTMLDivElement>(null);
@@ -109,14 +114,37 @@ const AnimatedCard = () => {
       return requestAnimationFrame(animateSubtitle);
     };
     
-    // Start title and subtitle animations
+    // Profile text animation
+    const profileAnimation = () => {
+      let startTime = Date.now();
+      const duration = 8000;
+      
+      const animateProfile = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = (elapsed % duration) / duration;
+        
+        // Create circular motion with unique phase and amplitude
+        const angle = progress * Math.PI * 2 + Math.PI/5; // different offset
+        const x = Math.sin(angle) * 7;
+        const y = Math.cos(angle) * 3;
+        
+        setProfilePos({ x, y });
+        requestAnimationFrame(animateProfile);
+      };
+      
+      return requestAnimationFrame(animateProfile);
+    };
+    
+    // Start all animations
     const titleAnimId = titleAnimation();
     const subtitleAnimId = subtitleAnimation();
+    const profileAnimId = profileAnimation();
 
     // Return cleanup function
     return () => {
       cancelAnimationFrame(titleAnimId);
       cancelAnimationFrame(subtitleAnimId);
+      cancelAnimationFrame(profileAnimId);
       
       // Reset positions if needed
       if (cardRef.current) animate(cardRef.current, { translateY: 0, translateX: 0, duration: 0 });
@@ -124,6 +152,7 @@ const AnimatedCard = () => {
       
       setTitlePos({ x: 0, y: 0 });
       setSubtitlePos({ x: 0, y: 0 });
+      setProfilePos({ x: 0, y: 0 });
     };
   }, []); // Empty dependency array so it runs once on mount
 
@@ -222,7 +251,7 @@ const AnimatedCard = () => {
     fontSize: '38px', 
     top: '-1.25%', 
     left: '30%',
-    transform: 'translateX(-50%) translateZ(-80px) rotateY(180deg)', 
+    transform: `translateX(-50%) translateZ(-80px) rotateY(180deg) translate(${profilePos.x}px, ${profilePos.y}px)`, 
     textAlign: 'center', 
     opacity: 0,
     fontWeight: 700,
@@ -352,7 +381,8 @@ const AnimatedCard = () => {
     cursor: 'pointer',
     transition: 'transform 0.2s ease, background-color 0.2s ease',
     fontFamily: 'Varela Round, sans-serif',
-    fontWeight: 500
+    fontWeight: 500,
+    pointerEvents: 'auto'
   };
 
   const socialsRef = useRef<HTMLDivElement>(null);
@@ -382,6 +412,11 @@ const AnimatedCard = () => {
         
         // Contact face (third face): fading in 270-360
         const contactOpacity = newRot <= 270 ? 0 : (newRot - 270) / 90;
+        
+        // Only show social links when substantially rotated to contact section
+        // This prevents them from interfering with scrolling when not visible
+        setShowSocialLinks(newRot >= 330);
+        setContactLinksActive(newRot >= 350);
         
         // Calculate expansion based on scroll position
         const expansionThreshold = sectionHeight * 0.1;
@@ -419,6 +454,17 @@ const AnimatedCard = () => {
     }
   };
 
+  // Safe click handler that only works when links should be active
+  const handleSafeClick = (url: string) => (e: React.MouseEvent) => {
+    if (contactLinksActive) {
+      window.open(url, '_blank');
+    } else {
+      // Prevent default and stop propagation to ensure the click doesn't do anything
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   useEffect(() => {
     const el = scrollRef.current;
     el?.addEventListener('scroll', handleScroll, { passive: true });
@@ -437,6 +483,117 @@ const AnimatedCard = () => {
     height: '100%',
     zIndex: 0,
     pointerEvents: 'none'
+  };
+
+  // Render social links outside the card when they should be visible
+  const renderSocialLinks = () => {
+    if (!showSocialLinks) return null;
+    
+    return (
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: contactLinksActive ? 100 : -1,
+        pointerEvents: contactLinksActive ? 'auto' : 'none',
+        opacity: contactLinksActive ? 1 : 0,
+        transition: 'opacity 0.3s ease',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        width: '80%',
+        maxWidth: '300px'
+      }}>
+        <button
+          onClick={() => window.open('https://www.youtube.com/channel/UC2kIgU1hMcvb2DT9CNa5a3g', '_blank')}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            padding: '12px 20px',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            border: 'none',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            cursor: 'pointer',
+            fontFamily: 'Varela Round, sans-serif',
+            fontSize: '16px',
+            fontWeight: 500
+          }}
+        >
+          <span>YouTube</span>
+          <SocialIcon style={{ height: '30px', width: '30px' }} network="youtube" bgColor="#FF0000" fgColor="#FFFFFF" />
+        </button>
+        
+        <button
+          onClick={() => window.open('https://www.linkedin.com/in/sunny-jayaram/', '_blank')}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            padding: '12px 20px',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            border: 'none',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            cursor: 'pointer',
+            fontFamily: 'Varela Round, sans-serif',
+            fontSize: '16px',
+            fontWeight: 500
+          }}
+        >
+          <span>LinkedIn</span>
+          <SocialIcon style={{ height: '30px', width: '30px' }} network="linkedin" bgColor="#0077B5" fgColor="#FFFFFF" />
+        </button>
+        
+        <button
+          onClick={() => window.open('https://github.com/sun-jay?tab=repositories', '_blank')}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            padding: '12px 20px',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            border: 'none',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            cursor: 'pointer',
+            fontFamily: 'Varela Round, sans-serif',
+            fontSize: '16px',
+            fontWeight: 500
+          }}
+        >
+          <span>GitHub</span>
+          <SocialIcon style={{ height: '30px', width: '30px' }} network="github" bgColor="#232323" fgColor="#FFFFFF" />
+        </button>
+        
+        <button
+          onClick={() => window.open('https://www.instagram.com/sunny_jayaram/?hl=en', '_blank')}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            padding: '12px 20px',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            border: 'none',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            cursor: 'pointer',
+            fontFamily: 'Varela Round, sans-serif',
+            fontSize: '16px',
+            fontWeight: 500
+          }}
+        >
+          <span>Instagram</span>
+          <SocialIcon style={{ height: '30px', width: '30px' }} network="instagram" bgColor="#E4405F" fgColor="#FFFFFF" />
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -498,11 +655,11 @@ const AnimatedCard = () => {
             </div>
           </div>
           
-          {/* Third Face (360/0 degrees) - Contact */}
+          {/* Third Face (360/0 degrees) - Contact - visual only, no interactive elements */}
           <div style={contactFaceStyle}>
             <div ref={contactFaceRef} style={{
               opacity: 0,
-              transform: 'rotateY(0deg)', // Fix backwards text - was 180deg
+              transform: 'rotateY(0deg)',
               width: '100%',
               height: '100%',
               display: 'flex',
@@ -512,50 +669,14 @@ const AnimatedCard = () => {
               boxSizing: 'border-box'
             }}>
               <div style={socialHeadingStyle}>Contact</div>
-              
-              <div 
-                onClick={() => window.open('https://www.youtube.com/channel/UC2kIgU1hMcvb2DT9CNa5a3g', '_blank')}
-                style={socialButtonStyle}
-              >
-                <span>YouTube</span>
-                <SocialIcon style={{ height: '30px', width: '30px' }} network="youtube" bgColor="#FF0000" fgColor="#FFFFFF" />
-              </div>
-              
-              <div 
-                onClick={() => window.open('https://www.linkedin.com/in/sunny-jayaram/', '_blank')}
-                style={socialButtonStyle}
-              >
-                <span>LinkedIn</span>
-                <SocialIcon style={{ height: '30px', width: '30px' }} network="linkedin" bgColor="#0077B5" fgColor="#FFFFFF" />
-              </div>
-              
-              <div 
-                onClick={() => window.open('https://github.com/sun-jay?tab=repositories', '_blank')}
-                style={socialButtonStyle}
-              >
-                <span>GitHub</span>
-                <SocialIcon style={{ height: '30px', width: '30px' }} network="github" bgColor="#232323" fgColor="#FFFFFF" />
-              </div>
-
-              <div 
-                onClick={() => window.open('https://www.instagram.com/sunny_jayaram/?hl=en', '_blank')}
-                style={socialButtonStyle}
-              >
-                <span>Instagram</span>
-                <SocialIcon style={{ height: '30px', width: '30px' }} network="instagram" bgColor="#E4405F" fgColor="#FFFFFF" />
-              </div>
-
-              <div 
-                onClick={() => window.open('mailto:sunny.jyrm@gmail.com', '_blank')}
-                style={socialButtonStyle}
-              >
-                <span>Email</span>
-                <SocialIcon style={{ height: '30px', width: '30px' }} network="email" bgColor="#232323" fgColor="#FFFFFF" />
-              </div>
+              {/* No social buttons here - they're rendered separately outside the card */}
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Render social links outside the 3D card when they should be visible */}
+      {renderSocialLinks()}
     </div>
   );
 };
