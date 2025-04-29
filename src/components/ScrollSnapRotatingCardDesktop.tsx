@@ -5,7 +5,7 @@ import type { CSSProperties } from 'react';
 import { animate } from 'animejs';
 import { SocialIcon } from 'react-social-icons';
 
-const AnimatedCard = () => {
+const ScrollSnapRotatingCardDesktop = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const titleContainerRef = useRef<HTMLDivElement>(null);
@@ -13,7 +13,7 @@ const AnimatedCard = () => {
   const greentextRef = useRef<HTMLDivElement>(null);
   const backHeadingRef = useRef<HTMLHeadingElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const [cardWidth, setCardWidth] = useState(270);
+  const [cardWidth, setCardWidth] = useState(600);
   const [cardHeight, setCardHeight] = useState(413);
   const [rotation, setRotation] = useState(0);
   const [backColor, setBackColor] = useState<string>('rgb(245, 214, 179)');
@@ -50,17 +50,17 @@ const AnimatedCard = () => {
   useEffect(() => {
     // Initialize more visible floating animations
     const startFloatingAnimations = () => {
-      // Card animation
-      if (cardRef.current) {
-        animate(cardRef.current, {
-          translateY: [0, -10, 0],
-          translateX: [0, 5, 0],
-          duration: 6000,
-          easing: 'easeInOutSine',
-          direction: 'alternate',
-          loop: true
-        });
-      }
+      // Card animation - removing for desktop version
+      // if (cardRef.current) {
+      //   animate(cardRef.current, {
+      //     translateY: [0, -10, 0],
+      //     translateX: [0, 5, 0],
+      //     duration: 6000,
+      //     easing: 'easeInOutSine',
+      //     direction: 'alternate',
+      //     loop: true
+      //   });
+      // }
       
       // Greentext animation
       if (greentextRef.current) {
@@ -152,19 +152,20 @@ const AnimatedCard = () => {
       return requestAnimationFrame(animateProfile);
     };
     
-    // Start all animations
+    // Start the text animations
     const titleAnimId = titleAnimation();
     const subtitleAnimId = subtitleAnimation();
     const profileAnimId = profileAnimation();
 
     // Return cleanup function
     return () => {
+      // Properly clean up animation frames
       cancelAnimationFrame(titleAnimId);
       cancelAnimationFrame(subtitleAnimId);
       cancelAnimationFrame(profileAnimId);
       
       // Reset positions if needed
-      if (cardRef.current) animate(cardRef.current, { translateY: 0, translateX: 0, duration: 0 });
+      // No need to reset card position since we don't animate it
       if (greentextRef.current) animate(greentextRef.current, { translateY: 0, translateX: 0, rotateZ: 0, duration: 0 });
       
       setTitlePos({ x: 0, y: 0 });
@@ -179,7 +180,7 @@ const AnimatedCard = () => {
     if (!el) return;
     animate(el, {
       rotateY: 360,
-      translateX: [0, 0],
+      translateX: 0,
       translateY: [-200, 0],
       duration: 2000,
       ease: dampedOscillation as any,
@@ -224,7 +225,7 @@ const AnimatedCard = () => {
   
   const backFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: backColor,
+    backgroundColor: '#E63946',
     transform: 'rotateY(180deg)'
   };
 
@@ -265,14 +266,17 @@ const AnimatedCard = () => {
 
   const backHeadingStyle: CSSProperties = {
     ...floatingTextBase,
-    fontSize: '38px', 
-    top: '-1.25%', 
-    left: '30%',
+    fontSize: '48px', 
+    top: '0%', 
+    left: '25%',
     transform: `translateX(-50%) translateZ(-80px) rotateY(180deg) translate(${profilePos.x}px, ${profilePos.y}px)`, 
     textAlign: 'center', 
     opacity: 0,
     fontWeight: 700,
-    textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+    color: 'black',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+    fontFamily: 'Varela Round, sans-serif',
+    width: '100%'
   };
 
   const backContentStyle: CSSProperties = {
@@ -283,14 +287,12 @@ const AnimatedCard = () => {
     width: '85%',
     display: 'flex',
     flexDirection: 'column',
-    // gap: '0.em',
     opacity: 0,
     fontFamily: 'Varela Round, sans-serif',
-    backgroundColor: backColor,
+    backgroundColor: '#F5F5F5',
     padding: '1.25em',
-    borderRadius: '0.9em',
-    backdropFilter: 'none',
-    boxShadow: 'none',
+    borderRadius: '15px',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
     color: '#000'
   };
 
@@ -299,17 +301,18 @@ const AnimatedCard = () => {
     transform: 'translateX(-50%) translateZ(70px)', width: '85%',
     background: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(10px)',
     border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '1.125em',
-    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.1em', color: '#444',
+    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.5em', color: '#444',
     boxShadow: '0 0.25em 1.875em rgba(0,0,0,0.1)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
   };
 
   const sectionHeadingStyle: CSSProperties = {
-    fontSize: '1.125em', 
+    fontSize: '1.25em',
     marginBottom: '0.75em',
     fontWeight: 600,
     color: '#222',
-    borderBottom: '2px solid rgba(0,0,0,0.1)',
-    paddingBottom: '0.375em'
+    borderBottom: '1px solid rgba(0,0,0,0.1)',
+    paddingBottom: '0.5em',
+    width: '100%'
   };
 
   const aboutMeStyle: CSSProperties = {
@@ -330,19 +333,19 @@ const AnimatedCard = () => {
   const skillTagStyle: CSSProperties = {
     backgroundColor: 'rgba(73, 80, 246, 0.15)',
     color: '#4950F6',
-    padding: '0.375em 0.875em',
-    borderRadius: '0.9375em',
-    fontSize: '0.8125em',
+    padding: '0.4em 0.9em',
+    borderRadius: '999px',
+    fontSize: '0.9em',
     fontFamily: 'Varela Round, sans-serif',
     fontWeight: 500,
-    boxShadow: '0 0.125em 0.25em rgba(0,0,0,0.05)',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
     transition: 'all 0.2s ease'
   };
 
   const educationStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.9em',
+    gap: '1em',
     fontFamily: 'Varela Round, sans-serif',
     padding: '0.5em 0',
     color: '#000'
@@ -352,7 +355,7 @@ const AnimatedCard = () => {
     width: '5rem',
     height: '5rem',
     objectFit: 'contain',
-    filter: 'drop-shadow(0 0.125em 0.1875em rgba(0,0,0,0.1))',
+    filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
     margin: '0.125em'
   };
 
@@ -442,7 +445,7 @@ const AnimatedCard = () => {
         const expansionFactor = Math.min(1, Math.max(0, (scrollTop - expansionThreshold) / (sectionHeight * 0.3)));
         
         // Calculate new card dimensions
-        const targetWidth = 270 + (100 * expansionFactor);
+        const targetWidth = 600 + (100 * expansionFactor);
         const targetHeight = 413 + (100 * expansionFactor);
         
         setCardWidth(targetWidth);
@@ -527,9 +530,9 @@ const AnimatedCard = () => {
         transition: 'opacity 0.3s ease',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px',
-        width: '80%',
-        maxWidth: '300px'
+        gap: '16px',
+        width: '85%',
+        maxWidth: '400px'
       }}>
         <button
           onClick={() => window.open('https://www.youtube.com/channel/UC2kIgU1hMcvb2DT9CNa5a3g', '_blank')}
@@ -538,19 +541,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
             border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
+            fontSize: '20px',
             fontWeight: 500
           }}
         >
           <span>YouTube</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="youtube" bgColor="#FF0000" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="youtube" bgColor="#FF0000" fgColor="#FFFFFF" />
         </button>
         
         <button
@@ -560,19 +563,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
             border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
+            fontSize: '20px',
             fontWeight: 500
           }}
         >
           <span>LinkedIn</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="linkedin" bgColor="#0077B5" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="linkedin" bgColor="#0077B5" fgColor="#FFFFFF" />
         </button>
         
         <button
@@ -582,19 +585,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
             border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
+            fontSize: '20px',
             fontWeight: 500
           }}
         >
           <span>GitHub</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="github" bgColor="#232323" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="github" bgColor="#232323" fgColor="#FFFFFF" />
         </button>
         
         <button
@@ -604,19 +607,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
             border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
+            fontSize: '20px',
             fontWeight: 500
           }}
         >
           <span>Instagram</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="instagram" bgColor="#E4405F" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="instagram" bgColor="#E4405F" fgColor="#FFFFFF" />
         </button>
       </div>
     );
@@ -712,20 +715,20 @@ const AnimatedCard = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '0.625em',
+                marginBottom: '1em',
                 width: '100%'
               }}>
                 <img 
                   src="me.jpg" 
                   alt="Profile" 
                   style={{
-                    width: 'calc(min(55%, 11.25rem))',
+                    width: 'calc(min(50%, 10rem))',
                     height: 'auto',
                     aspectRatio: '1/1',
                     objectFit: 'cover',
                     borderRadius: '50%',
-                    boxShadow: '0 0.25em 0.75em rgba(0,0,0,0.15)',
-                    border: '2px solid rgba(255,255,255,0.8)',
+                    boxShadow: '0 6px 15px rgba(0,0,0,0.15)',
+                    border: '2px solid white',
                     margin: '0.3125em'
                   }}
                 />
@@ -738,17 +741,22 @@ const AnimatedCard = () => {
                   style={uclaLogoStyle}
                 />
                 <div>
-                  <p style={{ fontWeight: 'bold', fontSize: '0.9375em', marginBottom: '0.25em' }}>B.S. Data Science</p>
-                  <p style={{ marginBottom: '0.1875em' }}>UCLA</p>
-                  <p style={{ marginBottom: '0.1875em' }}>Expected Graduation: 2027</p>
-                  {/* <p>GPA: 3.86</p> */}
+                  <p style={{ fontWeight: 'bold', fontSize: '1em', marginBottom: '0.3em' }}>B.S. Data Science</p>
+                  <p style={{ marginBottom: '0.2em', fontSize: '0.95em' }}>UCLA</p>
+                  <p style={{ fontSize: '0.9em' }}>Expected Graduation: 2027</p>
                 </div>
               </div>
             </div>
 
-            <div style={{ marginTop: '0.1875em' }}>
+            <div style={{ marginTop: '1em' }}>
               <h3 style={sectionHeadingStyle}>Skills</h3>
-              <div style={skillsStyle}>
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.6em',
+                marginBottom: '1em',
+                justifyContent: 'center'
+              }}>
                 <span style={skillTagStyle}>Python</span>
                 <span style={skillTagStyle}>C++/CUDA</span>
                 <span style={skillTagStyle}>Go</span>
@@ -785,4 +793,4 @@ const AnimatedCard = () => {
   );
 };
 
-export default AnimatedCard;
+export default ScrollSnapRotatingCardDesktop;
