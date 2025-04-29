@@ -42,10 +42,11 @@ const AnimatedCard = () => {
     height: '100%',
     transformStyle: 'preserve-3d',
     transition: 'transform 0.35s ease-out',
-    transform: `rotateY(${rotation}deg)`,
+    transform: `rotateY(${rotation}deg) translateZ(0)`,
     position: 'relative',
     borderRadius: '15px',
     boxShadow: '0 70px 63px -60px rgba(0,0,0,0.45)',
+    willChange: 'transform',
   };
 
   /* ------------  FACES & SHADOW  ------------ */
@@ -171,10 +172,17 @@ const shadowStyle: CSSProperties = {
   };
 
   /* ------------  SCROLL HANDLER  ------------ */
+  const ticking = useRef(false);
   const handleScroll = () => {
     if (!scrollRef.current) return;
-    const scrollTop = scrollRef.current.scrollTop;
-    setRotation((scrollTop / window.innerHeight) * 180);
+    if (!ticking.current) {
+      window.requestAnimationFrame(() => {
+        const scrollTop = scrollRef.current!.scrollTop;
+        setRotation((scrollTop / window.innerHeight) * 180);
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
   };
 
   useEffect(() => {
