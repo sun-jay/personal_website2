@@ -8,8 +8,8 @@ import { SocialIcon } from 'react-social-icons';
 const AnimatedCard = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLHeadingElement>(null);
+  const titleContainerRef = useRef<HTMLDivElement>(null);
+  const subtitleContainerRef = useRef<HTMLDivElement>(null);
   const greentextRef = useRef<HTMLDivElement>(null);
   const backHeadingRef = useRef<HTMLHeadingElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -18,6 +18,10 @@ const AnimatedCard = () => {
   const [rotation, setRotation] = useState(0);
   const [backColor, setBackColor] = useState<string>('rgb(245, 214, 179)');
   const ticking = useRef(false);
+  
+  // Add state for title and subtitle positions
+  const [titlePos, setTitlePos] = useState({ x: 0, y: 0 });
+  const [subtitlePos, setSubtitlePos] = useState({ x: 0, y: 0 });
 
   // Add reference for contact face
   const contactFaceRef = useRef<HTMLDivElement>(null);
@@ -30,6 +34,98 @@ const AnimatedCard = () => {
     const norm = 1 - Math.exp(-damping) * Math.cos(2 * Math.PI * freq);
     return raw / norm;
   };
+
+  /* ------------ FLOATING ANIMATIONS ------------ */
+  useEffect(() => {
+    // Initialize more visible floating animations
+    const startFloatingAnimations = () => {
+      // Card animation
+      if (cardRef.current) {
+        animate(cardRef.current, {
+          translateY: [0, -10, 0],
+          translateX: [0, 5, 0],
+          duration: 6000,
+          easing: 'easeInOutSine',
+          direction: 'alternate',
+          loop: true
+        });
+      }
+      
+      // Greentext animation
+      if (greentextRef.current) {
+        animate(greentextRef.current, {
+          translateY: [0, -7, 0],
+          rotateZ: [0, 1, 0],
+          duration: 9000,
+          easing: 'easeInOutCubic',
+          direction: 'alternate',
+          loop: true
+        });
+      }
+    };
+
+    // Start animations immediately
+    startFloatingAnimations();
+
+    // Title animation using state
+    const titleAnimation = () => {
+      let startTime = Date.now();
+      const duration = 7000;
+      
+      const animateTitle = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = (elapsed % duration) / duration;
+        
+        // Create circular motion
+        const angle = progress * Math.PI * 2;
+        const x = Math.sin(angle) * 5;
+        const y = Math.cos(angle) * 8;
+        
+        setTitlePos({ x, y });
+        requestAnimationFrame(animateTitle);
+      };
+      
+      return requestAnimationFrame(animateTitle);
+    };
+    
+    // Subtitle animation using state
+    const subtitleAnimation = () => {
+      let startTime = Date.now();
+      const duration = 5000;
+      
+      const animateSubtitle = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = (elapsed % duration) / duration;
+        
+        // Create circular motion with different phase
+        const angle = progress * Math.PI * 2 + Math.PI/3; // offset
+        const x = Math.sin(angle) * 6;
+        const y = Math.cos(angle) * 4;
+        
+        setSubtitlePos({ x, y });
+        requestAnimationFrame(animateSubtitle);
+      };
+      
+      return requestAnimationFrame(animateSubtitle);
+    };
+    
+    // Start title and subtitle animations
+    const titleAnimId = titleAnimation();
+    const subtitleAnimId = subtitleAnimation();
+
+    // Return cleanup function
+    return () => {
+      cancelAnimationFrame(titleAnimId);
+      cancelAnimationFrame(subtitleAnimId);
+      
+      // Reset positions if needed
+      if (cardRef.current) animate(cardRef.current, { translateY: 0, translateX: 0, duration: 0 });
+      if (greentextRef.current) animate(greentextRef.current, { translateY: 0, translateX: 0, rotateZ: 0, duration: 0 });
+      
+      setTitlePos({ x: 0, y: 0 });
+      setSubtitlePos({ x: 0, y: 0 });
+    };
+  }, []); // Empty dependency array so it runs once on mount
 
   /* ------------  STARTUP ANIMATION  ------------ */
   useEffect(() => {
@@ -88,7 +184,7 @@ const AnimatedCard = () => {
 
   const contactFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: 'rgba(255, 245, 235, 0.95)',
+    backgroundColor: 'rgba(245, 214, 179)',
     transform: 'rotateY(360deg)',
     color: 'black'
   };
@@ -96,6 +192,29 @@ const AnimatedCard = () => {
   const floatingTextBase: CSSProperties = {
     color: 'black', fontFamily: 'Varela Round, sans-serif', fontWeight: 600,
     lineHeight: 1.1, pointerEvents: 'none', position: 'absolute', backfaceVisibility: 'hidden'
+  };
+
+  const titleContainerStyle: CSSProperties = {
+    ...floatingTextBase, 
+    fontSize: '2em', 
+    top: '-2%', 
+    left: '33%',
+    transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`, 
+    width: '90%', 
+    textAlign: 'center', 
+    opacity: 1
+  };
+  
+  const subtitleContainerStyle: CSSProperties = {
+    ...floatingTextBase, 
+    fontSize: '1.25rem', 
+    bottom: '10%', 
+    left: '65%',
+    transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`, 
+    width: '90%', 
+    textAlign: 'center', 
+    opacity: 1,
+    fontStyle: 'italic'
   };
 
   const backHeadingStyle: CSSProperties = {
@@ -128,18 +247,9 @@ const AnimatedCard = () => {
     color: '#000'
   };
 
-  const titleStyle: CSSProperties = {
-    ...floatingTextBase, fontSize: '2em', top: '-1%', left: '33%',
-    transform: 'translate(-50%,0) translateZ(80px)', width: '90%', textAlign: 'center', opacity: 1
-  };
-  const subtitleStyle: CSSProperties = {
-    ...floatingTextBase, fontSize: '1.25rem', bottom: '32px', left: '70%',
-    transform: 'translate(-40%,-50%) translateZ(60px)', width: '90%', textAlign: 'center', opacity: 1,
-    fontStyle: 'italic'
-  };
   const greentextBlockStyle: CSSProperties = {
     position: 'absolute', top: '80px', left: '50%',
-    transform: 'translateX(-50%) translateZ(40px)', width: '85%',
+    transform: 'translateX(-50%) translateZ(70px)', width: '85%',
     background: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(10px)',
     border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '18px',
     padding: '18px 20px', fontFamily: 'monospace', fontSize: '1.1em', color: '#444',
@@ -288,20 +398,20 @@ const AnimatedCard = () => {
         animate(cardRef.current!, { rotateY: newRot, duration: 0, ease: 'linear' });
         
         // Animate front face elements
-        if (titleRef.current)     animate(titleRef.current,     { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
-        if (subtitleRef.current)  animate(subtitleRef.current,  { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
+        if (titleContainerRef.current) animate(titleContainerRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
+        if (subtitleContainerRef.current) animate(subtitleContainerRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
         if (greentextRef.current) animate(greentextRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
         
         // Animate back face elements
         if (backHeadingRef.current) animate(backHeadingRef.current, { opacity: backOpacity, duration: 300, ease: dampedOscillation as any });
         if (profileRef.current) setTimeout(() => {
           if (profileRef.current) {
-            animate(profileRef.current, { opacity: backOpacity, duration: 250, ease: dampedOscillation as any });
+            animate(profileRef.current, { opacity: backOpacity, duration: 100, ease: 'linear' });
           }
         }, 250);
         
         // Animate contact face
-        if (contactFaceRef.current) animate(contactFaceRef.current, { opacity: contactOpacity, duration: 300, ease: dampedOscillation as any });
+        if (contactFaceRef.current) animate(contactFaceRef.current, { opacity: contactOpacity, duration: 100, ease: 'linear' });
         
         ticking.current = false;
       });
@@ -337,15 +447,15 @@ const AnimatedCard = () => {
       <div style={redStyle}>
         <div style={sectionOverlayStyle} data-section="1" />
       </div>
-      <div style={greenStyle}>
+      <div style={beigeStyle}>
         <div style={sectionOverlayStyle} data-section="2" />
       </div>
       <div style={cardContainerStyle}>
         <div ref={cardRef} style={cardStyle}>
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
-          <h2 ref={titleRef}    style={titleStyle}>Sunny Jayaram</h2>
-          <h2 ref={subtitleRef} style={subtitleStyle}>Full Stack Developer</h2>
+          <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
+          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'> be me'}<br/>
             {'> go to community college'}<br/>
@@ -368,9 +478,9 @@ const AnimatedCard = () => {
                 />
                 <div>
                   <p style={{ fontWeight: 'bold', fontSize: '15px', marginBottom: '4px' }}>B.S. Data Science</p>
-                  <p style={{ marginBottom: '3px' }}>University of California, Los Angeles</p>
-                  <p style={{ marginBottom: '3px' }}>Expected Graduation: 2025</p>
-                  <p>GPA: 3.86</p>
+                  <p style={{ marginBottom: '3px' }}>UCLA</p>
+                  <p style={{ marginBottom: '3px' }}>Expected Graduation: 2027</p>
+                  {/* <p>GPA: 3.86</p> */}
                 </div>
               </div>
             </div>
