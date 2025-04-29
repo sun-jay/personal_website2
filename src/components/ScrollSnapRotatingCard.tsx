@@ -27,9 +27,15 @@ const AnimatedCard = () => {
   // Track if social links should be rendered at all
   const [showSocialLinks, setShowSocialLinks] = useState(false);
   const [contactLinksActive, setContactLinksActive] = useState(false);
+  
+  // Add state for the bouncing arrow
+  const [showArrow, setShowArrow] = useState(true);
 
   // Add reference for contact face
   const contactFaceRef = useRef<HTMLDivElement>(null);
+  
+  // Add reference for the bouncing arrow
+  const arrowRef = useRef<HTMLDivElement>(null);
 
   /* ------------  CUSTOM DAMPED EASING  ------------ */
   const dampedOscillation = (t: number) => {
@@ -63,6 +69,17 @@ const AnimatedCard = () => {
           rotateZ: [0, 1, 0],
           duration: 9000,
           easing: 'easeInOutCubic',
+          direction: 'alternate',
+          loop: true
+        });
+      }
+      
+      // Start arrow animation
+      if (arrowRef.current) {
+        animate(arrowRef.current, {
+          translateY: [0, -10, 0],
+          duration: 1500,
+          easing: 'easeInOutQuad',
           direction: 'alternate',
           loop: true
         });
@@ -450,6 +467,13 @@ const AnimatedCard = () => {
         // Animate contact face
         if (contactFaceRef.current) animate(contactFaceRef.current, { opacity: contactOpacity, duration: 100, ease: 'linear' });
         
+        // Hide arrow only when approaching the third section
+        if (scrollTop > sectionHeight * 1.7) {
+          setShowArrow(false);
+        } else {
+          setShowArrow(true);
+        }
+        
         ticking.current = false;
       });
       ticking.current = true;
@@ -598,6 +622,41 @@ const AnimatedCard = () => {
     );
   };
 
+  // Handle arrow click to scroll to next section
+  const handleArrowClick = () => {
+    if (scrollRef.current) {
+      const sectionHeight = scrollRef.current.clientHeight;
+      const currentScroll = scrollRef.current.scrollTop;
+      
+      // Determine target section (first or second)
+      const isFirstSection = currentScroll < sectionHeight * 0.5;
+      const targetScroll = isFirstSection ? sectionHeight : sectionHeight * 2;
+      
+      // Use browser's built-in smooth scroll
+      scrollRef.current.scrollTo({
+        top: targetScroll,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Arrow styling
+  const arrowStyle: CSSProperties = {
+    position: 'fixed',
+    bottom: '3%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    cursor: 'pointer',
+    opacity: showArrow ? 1 : 0,
+    transition: 'opacity 0.5s ease-out',
+    zIndex: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    pointerEvents: showArrow ? 'auto' : 'none',
+    color: '#444'
+  };
+
   return (
     <div ref={scrollRef} style={containerStyle}>
       <div style={beigeStyle}>
@@ -609,6 +668,27 @@ const AnimatedCard = () => {
       <div style={beigeStyle}>
         <div style={sectionOverlayStyle} data-section="2" />
       </div>
+      
+      {/* Bouncing Arrow */}
+      <div 
+        ref={arrowRef}
+        style={arrowStyle} 
+        onClick={handleArrowClick}
+      >
+        <svg 
+          width="40" 
+          height="40" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </div>
+      
       <div style={cardContainerStyle}>
         <div ref={cardRef} style={cardStyle}>
           {/* Front Face (0 degrees) */}

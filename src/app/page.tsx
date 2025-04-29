@@ -1,14 +1,5 @@
-import ClientWrapper from '@/components/ClientWrapper';
-import Head from 'next/head';
+import ScrollSnapRotatingCard from '@/components/ScrollSnapRotatingCard';
 
 export default function Home() {
-  return (
-    <>
-      <Head>
-        <title>sunny-jay.com</title>
-        <meta name="description" content="sunny-jay.com" />
-      </Head>
-      <ClientWrapper />
-    </>
-  );
+  return <ScrollSnapRotatingCard />;
 }
