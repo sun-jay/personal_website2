@@ -176,7 +176,7 @@ const AnimatedCard = () => {
     scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch', position: 'relative'
   };
   const sectionStyle: CSSProperties = { height: '100vh', scrollSnapAlign: 'start' };
-  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#F5F2E7' };
+  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'rgb(245, 242, 231)' };
   const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#E63946' };
   const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#2A9D8F' };
 
@@ -262,36 +262,37 @@ const AnimatedCard = () => {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%) translateZ(-100px) rotateY(180deg)',
+    transform: 'translate(-50%, -50%) translateZ(-50px) rotateY(180deg)',
     width: '85%',
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    // gap: '0.em',
     opacity: 0,
     fontFamily: 'Varela Round, sans-serif',
-    backgroundColor: 'rgba(255, 245, 235, 0.95)',
-    padding: '20px',
-    borderRadius: '15px',
-    boxShadow: '0 10px 20px rgba(0,0,0,0.08)',
+    backgroundColor: backColor,
+    padding: '1.25em',
+    borderRadius: '0.9em',
+    backdropFilter: 'none',
+    boxShadow: 'none',
     color: '#000'
   };
 
   const greentextBlockStyle: CSSProperties = {
-    position: 'absolute', top: '80px', left: '50%',
+    position: 'absolute', top: '5em', left: '50%',
     transform: 'translateX(-50%) translateZ(70px)', width: '85%',
     background: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '18px',
-    padding: '18px 20px', fontFamily: 'monospace', fontSize: '1.1em', color: '#444',
-    boxShadow: '0 4px 30px rgba(0,0,0,0.1)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
+    border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '1.125em',
+    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.1em', color: '#444',
+    boxShadow: '0 0.25em 1.875em rgba(0,0,0,0.1)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
   };
 
   const sectionHeadingStyle: CSSProperties = {
-    fontSize: '18px', 
-    marginBottom: '12px',
+    fontSize: '1.125em', 
+    marginBottom: '0.75em',
     fontWeight: 600,
     color: '#222',
     borderBottom: '2px solid rgba(0,0,0,0.1)',
-    paddingBottom: '6px'
+    paddingBottom: '0.375em'
   };
 
   const aboutMeStyle: CSSProperties = {
@@ -304,37 +305,38 @@ const AnimatedCard = () => {
   const skillsStyle: CSSProperties = {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '8px',
-    marginBottom: '20px',
+    gap: '0.5em',
+    marginBottom: '1.25em',
     fontFamily: 'Varela Round, sans-serif'
   };
 
   const skillTagStyle: CSSProperties = {
     backgroundColor: 'rgba(73, 80, 246, 0.15)',
     color: '#4950F6',
-    padding: '6px 14px',
-    borderRadius: '15px',
-    fontSize: '13px',
+    padding: '0.375em 0.875em',
+    borderRadius: '0.9375em',
+    fontSize: '0.8125em',
     fontFamily: 'Varela Round, sans-serif',
     fontWeight: 500,
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+    boxShadow: '0 0.125em 0.25em rgba(0,0,0,0.05)',
     transition: 'all 0.2s ease'
   };
 
   const educationStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '15px',
+    gap: '0.9em',
     fontFamily: 'Varela Round, sans-serif',
-    padding: '8px 0',
+    padding: '0.5em 0',
     color: '#000'
   };
 
   const uclaLogoStyle: CSSProperties = {
-    width: '60px',
-    height: '60px',
+    width: '5rem',
+    height: '5rem',
     objectFit: 'contain',
-    filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))'
+    filter: 'drop-shadow(0 0.125em 0.1875em rgba(0,0,0,0.1))',
+    margin: '0.125em'
   };
 
   const socialContainerStyle: CSSProperties = {
@@ -626,6 +628,28 @@ const AnimatedCard = () => {
           <h2 ref={backHeadingRef} style={backHeadingStyle}>Profile</h2>
           <div ref={profileRef} style={backContentStyle}>
             <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '0.625em',
+                width: '100%'
+              }}>
+                <img 
+                  src="me.jpg" 
+                  alt="Profile" 
+                  style={{
+                    width: 'calc(min(55%, 11.25rem))',
+                    height: 'auto',
+                    aspectRatio: '1/1',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                    boxShadow: '0 0.25em 0.75em rgba(0,0,0,0.15)',
+                    border: '2px solid rgba(255,255,255,0.8)',
+                    margin: '0.3125em'
+                  }}
+                />
+              </div>
               <h3 style={sectionHeadingStyle}>Education</h3>
               <div style={educationStyle}>
                 <img 
@@ -634,15 +658,15 @@ const AnimatedCard = () => {
                   style={uclaLogoStyle}
                 />
                 <div>
-                  <p style={{ fontWeight: 'bold', fontSize: '15px', marginBottom: '4px' }}>B.S. Data Science</p>
-                  <p style={{ marginBottom: '3px' }}>UCLA</p>
-                  <p style={{ marginBottom: '3px' }}>Expected Graduation: 2027</p>
+                  <p style={{ fontWeight: 'bold', fontSize: '0.9375em', marginBottom: '0.25em' }}>B.S. Data Science</p>
+                  <p style={{ marginBottom: '0.1875em' }}>UCLA</p>
+                  <p style={{ marginBottom: '0.1875em' }}>Expected Graduation: 2027</p>
                   {/* <p>GPA: 3.86</p> */}
                 </div>
               </div>
             </div>
 
-            <div style={{ marginTop: '15px' }}>
+            <div style={{ marginTop: '0.1875em' }}>
               <h3 style={sectionHeadingStyle}>Skills</h3>
               <div style={skillsStyle}>
                 <span style={skillTagStyle}>Python</span>
