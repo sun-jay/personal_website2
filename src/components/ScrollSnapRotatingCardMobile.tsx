@@ -674,11 +674,11 @@ const AnimatedCard = () => {
           <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
           <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
           <div ref={greentextRef} style={greentextBlockStyle}>
-            {'> be me'}<br/>
-            {'> go to community college'}<br/>
-            {'> win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
-            {'> transfer to ucla'}<br/>
-            {'> ...'}
+            {'>be me'}<br/>
+            {'>go to community college'}<br/>
+            {'>win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
+            {'>transfer to ucla'}<br/>
+            {'>...'}
           </div>
           
           {/* Back Face (180 degrees) - Profile */}

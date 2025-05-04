@@ -37,6 +37,13 @@ const ScrollSnapRotatingCardDesktop = () => {
   // Add reference for the bouncing arrow
   const arrowRef = useRef<HTMLDivElement>(null);
 
+  const [initialLoad, setInitialLoad] = useState(true);
+  
+  // Track current section and whether scrolling is in progress
+  const [currentSection, setCurrentSection] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const totalSections = 3;
+  
   /* ------------  CUSTOM DAMPED EASING  ------------ */
   const dampedOscillation = (t: number) => {
     const ti = t * t;
@@ -178,20 +185,33 @@ const ScrollSnapRotatingCardDesktop = () => {
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
-    animate(el, {
-      rotateY: 360,
-      translateX: 0,
-      translateY: [-200, 0],
-      duration: 2000,
-      ease: dampedOscillation as any,
-      complete: () => setTimeout(() => setBackColor('#F5F2E7'), 1000)
-    });
+    
+    // Small delay to ensure initial position is rendered first
+    setTimeout(() => {
+      animate(el, {
+        rotateY: 360,
+        translateX: 0,
+        translateY: [0],
+        duration: 2000,
+        ease: dampedOscillation as any,
+        complete: () => {
+          setTimeout(() => {
+            setBackColor('#F5F2E7');
+            setInitialLoad(false);
+          }, 1000);
+        }
+      });
+    }, 50);
   }, []);
 
   /* ------------  LAYOUT ------------ */
   const containerStyle: CSSProperties = {
-    height: '100vh', overflowY: 'scroll', scrollSnapType: 'y mandatory',
-    scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch', position: 'relative'
+    height: '100vh', 
+    overflowY: 'scroll', 
+    scrollBehavior: 'smooth', 
+    WebkitOverflowScrolling: 'touch', 
+    position: 'relative',
+    scrollSnapType: 'none', // Remove default scroll snap behavior as we're handling it manually
   };
   const sectionStyle: CSSProperties = { height: '100vh', scrollSnapAlign: 'start' };
   const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'rgb(245, 242, 231)' };
@@ -207,7 +227,7 @@ const ScrollSnapRotatingCardDesktop = () => {
   
   const cardStyle: CSSProperties = {
     width: '100%', height: '100%', transformStyle: 'preserve-3d',
-    transform: `rotateY(${rotation}deg)`, position: 'relative', borderRadius: '15px',
+    transform: `${initialLoad ? 'translateY(-200px) ' : ''}rotateY(${rotation}deg)`, position: 'relative', borderRadius: '15px',
     boxShadow: '0 70px 63px -60px rgba(0,0,0,0.45)', willChange: 'transform',
   };
   
@@ -418,6 +438,12 @@ const ScrollSnapRotatingCardDesktop = () => {
         const scrollTop = container.scrollTop;
         const sectionHeight = container.clientHeight;
         
+        // Update current section based on scroll position
+        const newSection = Math.round(scrollTop / sectionHeight);
+        if (newSection !== currentSection) {
+          setCurrentSection(newSection);
+        }
+        
         // Calculate rotation for full 360 degrees across all three sections
         const newRot = (scrollTop / (sectionHeight * 2)) * 360;
         
@@ -494,14 +520,56 @@ const ScrollSnapRotatingCardDesktop = () => {
     }
   };
 
+  // Function to scroll to a specific section
+  const scrollToSection = (sectionIndex: number) => {
+    if (scrollRef.current && sectionIndex >= 0 && sectionIndex < totalSections) {
+      setIsScrolling(true);
+      const sectionHeight = scrollRef.current.clientHeight;
+      scrollRef.current.scrollTo({
+        top: sectionHeight * sectionIndex,
+        behavior: 'smooth'
+      });
+      
+      // Set timeout to allow smooth scrolling to complete
+      setTimeout(() => {
+        setIsScrolling(false);
+      }, 1000); // Adjust time based on your smooth scroll duration
+      
+      setCurrentSection(sectionIndex);
+    }
+  };
+
+  // Handle wheel events to implement one-section-at-a-time scrolling
+  const handleWheel = (e: WheelEvent) => {
+    e.preventDefault();
+    
+    // Ignore wheel events if already scrolling
+    if (isScrolling) return;
+    
+    // Determine scroll direction
+    const direction = e.deltaY > 0 ? 1 : -1;
+    const nextSection = Math.min(Math.max(currentSection + direction, 0), totalSections - 1);
+    
+    // Only scroll if changing sections
+    if (nextSection !== currentSection) {
+      scrollToSection(nextSection);
+    }
+  };
+
   useEffect(() => {
     const el = scrollRef.current;
-    el?.addEventListener('scroll', handleScroll, { passive: true });
-    return () => el?.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Add state to track which section is currently visible
-  const [currentSection, setCurrentSection] = useState(0);
+    if (!el) return;
+    
+    // Add event listeners
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    el.addEventListener('wheel', handleWheel as any, { passive: false });
+    
+    return () => {
+      // Clean up event listeners
+      el.removeEventListener('scroll', handleScroll);
+      el.removeEventListener('wheel', handleWheel as any);
+    };
+  }, [currentSection, isScrolling]);
 
   // Create a non-blocking transparent overlay for each section to better detect which section is active
   const sectionOverlayStyle: CSSProperties = {
@@ -627,19 +695,8 @@ const ScrollSnapRotatingCardDesktop = () => {
 
   // Handle arrow click to scroll to next section
   const handleArrowClick = () => {
-    if (scrollRef.current) {
-      const sectionHeight = scrollRef.current.clientHeight;
-      const currentScroll = scrollRef.current.scrollTop;
-      
-      // Determine target section (first or second)
-      const isFirstSection = currentScroll < sectionHeight * 0.5;
-      const targetScroll = isFirstSection ? sectionHeight : sectionHeight * 2;
-      
-      // Use browser's built-in smooth scroll
-      scrollRef.current.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth'
-      });
+    if (currentSection < totalSections - 1) {
+      scrollToSection(currentSection + 1);
     }
   };
 
@@ -699,11 +756,11 @@ const ScrollSnapRotatingCardDesktop = () => {
           <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
           <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
           <div ref={greentextRef} style={greentextBlockStyle}>
-            {'> be me'}<br/>
-            {'> go to community college'}<br/>
-            {'> win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
-            {'> transfer to ucla'}<br/>
-            {'> ...'}
+            {'>be me'}<br/>
+            {'>go to community college'}<br/>
+            {'>win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
+            {'>transfer to ucla'}<br/>
+            {'>...'}
           </div>
           
           {/* Back Face (180 degrees) - Profile */}

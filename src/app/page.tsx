@@ -1,27 +1,53 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ScrollSnapRotatingCardMobile from '@/components/ScrollSnapRotatingCardMobile';
-import ScrollSnapRotatingCardDesktop from '@/components/ScrollSnapRotatingCardDesktop';
+import dynamic from 'next/dynamic';
+import useMediaQuery from '@/hooks/useMediaQuery';
+
+// Use dynamic imports with no SSR to prevent hydration issues
+const ScrollSnapRotatingCardMobile = dynamic(
+  () => import('@/components/ScrollSnapRotatingCardMobile'),
+  { ssr: false }
+);
+
+const ScrollSnapRotatingCardDesktop = dynamic(
+  () => import('@/components/ScrollSnapRotatingCardDesktop'),
+  { ssr: false }
+);
 
 export default function Home() {
-  const [isMobile, setIsMobile] = useState(false);
-
+  // Use custom hook for media query detection
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  const [mounted, setMounted] = useState(false);
+  
+  // Handle mounting state to prevent flash of wrong component
   useEffect(() => {
-    // Function to check if the screen is mobile size
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile/desktop
-    };
-
-    // Check on mount
-    checkMobile();
-
-    // Add event listener for window resize
-    window.addEventListener('resize', checkMobile);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', checkMobile);
+    setMounted(true);
   }, []);
 
-  return isMobile ? <ScrollSnapRotatingCardMobile /> : <ScrollSnapRotatingCardDesktop />;
+  // Show nothing during initial mount to prevent flash of wrong component
+  if (!mounted) {
+    return (
+      <div style={{ 
+        height: '100vh', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        backgroundColor: 'rgb(245, 242, 231)'
+      }}>
+        {/* Optional loading indicator if desired */}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display: isMobile ? 'block' : 'none' }}>
+        <ScrollSnapRotatingCardMobile />
+      </div>
+      <div style={{ display: isMobile ? 'none' : 'block' }}>
+        <ScrollSnapRotatingCardDesktop />
+      </div>
+    </div>
+  );
 }
