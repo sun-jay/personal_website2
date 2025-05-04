@@ -36,6 +36,9 @@ const AnimatedCard = () => {
   
   // Add reference for the bouncing arrow
   const arrowRef = useRef<HTMLDivElement>(null);
+  
+  // Add initialLoad state to control startup animation
+  const [initialLoad, setInitialLoad] = useState(true);
 
   /* ------------  CUSTOM DAMPED EASING  ------------ */
   const dampedOscillation = (t: number) => {
@@ -155,14 +158,23 @@ const AnimatedCard = () => {
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
-    animate(el, {
-      rotateY: 360, // Keep only the rotation
-      translateX: 0, // No horizontal movement
-      translateY: [-200, 0],
-      duration: 2000,
-      ease: dampedOscillation as any,
-      complete: () => setTimeout(() => setBackColor('#F5F2E7'), 1000)
-    });
+    
+    // Small delay to ensure initial position is rendered first
+    setTimeout(() => {
+      animate(el, {
+        rotateY: 360,
+        translateX: 0,
+        translateY: [0],
+        duration: 2000,
+        ease: dampedOscillation as any,
+        complete: () => {
+          setTimeout(() => {
+            setBackColor('#F5F2E7');
+            setInitialLoad(false);
+          }, 1000);
+        }
+      });
+    }, 50);
   }, []);
 
   /* ------------  LAYOUT ------------ */
@@ -184,7 +196,7 @@ const AnimatedCard = () => {
   
   const cardStyle: CSSProperties = {
     width: '100%', height: '100%', transformStyle: 'preserve-3d',
-    transform: `rotateY(${rotation}deg)`, position: 'relative', borderRadius: '15px',
+    transform: `${initialLoad ? 'translateY(-200px) ' : ''}rotateY(${rotation}deg)`, position: 'relative', borderRadius: '15px',
     boxShadow: '0 70px 63px -60px rgba(0,0,0,0.45)', willChange: 'transform',
   };
   
