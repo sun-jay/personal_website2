@@ -371,7 +371,7 @@ const ScrollSnapRotatingCardDesktop = () => {
     color: '#000'
   };
 
-  const uclaLogoStyle: CSSProperties = {
+  const berkeleyLogoStyle: CSSProperties = {
     width: '5rem',
     height: '5rem',
     objectFit: 'contain',
@@ -759,7 +759,7 @@ const ScrollSnapRotatingCardDesktop = () => {
             {'>be me'}<br/>
             {'>go to community college'}<br/>
             {'>win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
-            {'>transfer to ucla'}<br/>
+            {'>transfer to berkeley'}<br/>
             {'>...'}
           </div>
           
@@ -793,13 +793,13 @@ const ScrollSnapRotatingCardDesktop = () => {
               <h3 style={sectionHeadingStyle}>Education</h3>
               <div style={educationStyle}>
                 <img 
-                  src="/ucla-logo-png-transparent.png" 
-                  alt="UCLA Logo" 
-                  style={uclaLogoStyle}
+                  src="/berk.png" 
+                  alt="Berkeley Logo" 
+                  style={berkeleyLogoStyle}
                 />
                 <div>
-                  <p style={{ fontWeight: 'bold', fontSize: '1em', marginBottom: '0.3em' }}>B.S. Data Science</p>
-                  <p style={{ marginBottom: '0.2em', fontSize: '0.95em' }}>UCLA</p>
+                  <p style={{ fontWeight: 'bold', fontSize: '1em', marginBottom: '0.3em' }}>B.S. Applied Mathematics</p>
+                  <p style={{ marginBottom: '0.2em', fontSize: '0.95em' }}>UC Berkeley</p>
                   <p style={{ fontSize: '0.9em' }}>Expected Graduation: 2027</p>
                 </div>
               </div>

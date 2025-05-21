@@ -212,7 +212,7 @@ const shadowStyle: CSSProperties = {
             {'> be me'}<br/>
             {'> go to community college'}<br/>
             {'> win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
-            {'> transfer to ucla'}<br/>
+            {'> transfer to berkeley'}<br/>
             {'> ...'}
           </div>
           <div style={backFaceStyle} />

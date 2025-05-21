@@ -338,7 +338,7 @@ const AnimatedCard = () => {
     color: '#000'
   };
 
-  const uclaLogoStyle: CSSProperties = {
+  const berkeleyLogoStyle: CSSProperties = {
     width: '5rem',
     height: '5rem',
     objectFit: 'contain',
@@ -689,7 +689,7 @@ const AnimatedCard = () => {
             {'>be me'}<br/>
             {'>go to community college'}<br/>
             {'>win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
-            {'>transfer to ucla'}<br/>
+            {'>transfer to berkeley'}<br/>
             {'>...'}
           </div>
           
@@ -723,13 +723,13 @@ const AnimatedCard = () => {
               <h3 style={sectionHeadingStyle}>Education</h3>
               <div style={educationStyle}>
                 <img 
-                  src="/ucla-logo-png-transparent.png" 
-                  alt="UCLA Logo" 
-                  style={uclaLogoStyle}
+                  src="/berk.png" 
+                  alt="Berkeley Logo" 
+                  style={berkeleyLogoStyle}
                 />
                 <div>
-                  <p style={{ fontWeight: 'bold', fontSize: '0.9375em', marginBottom: '0.25em' }}>B.S. Data Science</p>
-                  <p style={{ marginBottom: '0.1875em' }}>UCLA</p>
+                  <p style={{ fontWeight: 'bold', fontSize: '0.9375em', marginBottom: '0.25em' }}>B.S. Applied Mathematics</p>
+                  <p style={{ marginBottom: '0.1875em' }}>UC Berkeley</p>
                   <p style={{ marginBottom: '0.1875em' }}>Expected Graduation: 2027</p>
                   {/* <p>GPA: 3.86</p> */}
                 </div>
