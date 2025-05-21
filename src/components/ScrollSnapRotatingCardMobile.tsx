@@ -723,7 +723,7 @@ const AnimatedCard = () => {
               <h3 style={sectionHeadingStyle}>Education</h3>
               <div style={educationStyle}>
                 <img 
-                  src="/berk.png" 
+                  src="/berk.svg" 
                   alt="Berkeley Logo" 
                   style={berkeleyLogoStyle}
                 />
