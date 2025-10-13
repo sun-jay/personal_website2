@@ -211,7 +211,7 @@ const shadowStyle: CSSProperties = {
           <div style={greentextBlockStyle}>
             {'> be me'}<br/>
             {'> go to community college'}<br/>
-            {'> win stanford, uc berkeley, ucla, upenn\'s hackathons'}<br/>
+            {'> win 10 hackathons @ stanford, uc berkeley, ucla, upenn'}<br/>
             {'> transfer to berkeley'}<br/>
             {'> ...'}
           </div>
