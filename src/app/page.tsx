@@ -28,12 +28,12 @@ export default function Home() {
   // Show nothing during initial mount to prevent flash of wrong component
   if (!mounted) {
     return (
-      <div style={{ 
-        height: '100vh', 
-        display: 'flex', 
-        justifyContent: 'center', 
+      <div style={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgb(245, 242, 231)'
+        backgroundColor: '#1a1a2e'
       }}>
         {/* Optional loading indicator if desired */}
       </div>

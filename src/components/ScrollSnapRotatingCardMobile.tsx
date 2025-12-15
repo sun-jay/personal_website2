@@ -16,7 +16,7 @@ const AnimatedCard = () => {
   const [cardWidth, setCardWidth] = useState(270);
   const [cardHeight, setCardHeight] = useState(413);
   const [rotation, setRotation] = useState(0);
-  const [backColor, setBackColor] = useState<string>('rgb(245, 214, 179)');
+  const [backColor, setBackColor] = useState<string>('rgb(250, 248, 243)');
   const ticking = useRef(false);
   
   // Add state for title, subtitle and profile positions
@@ -53,13 +53,12 @@ const AnimatedCard = () => {
   useEffect(() => {
     // Card animation removed for stability, but add greentext animation
     const startFloatingAnimations = () => {
-      // Greentext animation
+      // Subtle about section animation
       if (greentextRef.current) {
         animate(greentextRef.current, {
-          translateY: [0, -7, 0],
-          rotateZ: [0, 1, 0],
-          duration: 9000,
-          easing: 'easeInOutCubic',
+          translateY: [0, -2, 0],
+          duration: 12000,
+          easing: 'easeInOutSine',
           direction: 'alternate',
           loop: true
         });
@@ -78,10 +77,10 @@ const AnimatedCard = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
         
-        // Create circular motion
+        // Create subtle circular motion
         const angle = progress * Math.PI * 2;
-        const x = Math.sin(angle) * 5;
-        const y = Math.cos(angle) * 8;
+        const x = Math.sin(angle) * 2;
+        const y = Math.cos(angle) * 3;
         
         setTitlePos({ x, y });
         requestAnimationFrame(animateTitle);
@@ -99,10 +98,10 @@ const AnimatedCard = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
         
-        // Create circular motion with different phase
+        // Create subtle circular motion with different phase
         const angle = progress * Math.PI * 2 + Math.PI/3; // offset
-        const x = Math.sin(angle) * 6;
-        const y = Math.cos(angle) * 4;
+        const x = Math.sin(angle) * 2;
+        const y = Math.cos(angle) * 2;
         
         setSubtitlePos({ x, y });
         requestAnimationFrame(animateSubtitle);
@@ -120,10 +119,10 @@ const AnimatedCard = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
         
-        // Create circular motion with unique phase and amplitude
+        // Create subtle circular motion with unique phase and amplitude
         const angle = progress * Math.PI * 2 + Math.PI/5; // different offset
-        const x = Math.sin(angle) * 7;
-        const y = Math.cos(angle) * 3;
+        const x = Math.sin(angle) * 2;
+        const y = Math.cos(angle) * 2;
         
         setProfilePos({ x, y });
         requestAnimationFrame(animateProfile);
@@ -169,7 +168,7 @@ const AnimatedCard = () => {
         ease: dampedOscillation as any,
         complete: () => {
           setTimeout(() => {
-            setBackColor('#F5F2E7');
+            setBackColor('rgb(250, 248, 243)');
             setInitialLoad(false);
           }, 1000);
         }
@@ -183,9 +182,9 @@ const AnimatedCard = () => {
     scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch', position: 'relative'
   };
   const sectionStyle: CSSProperties = { height: '100vh', scrollSnapAlign: 'start' };
-  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'rgb(245, 242, 231)' };
-  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#E63946' };
-  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#2A9D8F' };
+  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#1a1a2e' };
+  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#16213e' };
+  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#0f1419' };
 
   /* ------------  CARD & FACES & TEXT ------------ */
   const cardContainerStyle: CSSProperties = {
@@ -205,64 +204,73 @@ const AnimatedCard = () => {
     
   };
   
-  const frontFaceStyle: CSSProperties = { 
-    ...faceBase, 
-    backgroundColor: 'rgb(245, 214, 179)',
+  const frontFaceStyle: CSSProperties = {
+    ...faceBase,
+    backgroundColor: 'rgb(250, 248, 243)',
     transform: 'rotateY(0deg)'
-    
+
   };
   
   const backFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: backColor,
+    backgroundColor: '#16213e',
     transform: 'rotateY(180deg)'
   };
 
   const contactFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: 'rgba(245, 214, 179)',
+    backgroundColor: 'rgb(250, 248, 243)',
     transform: 'rotateY(360deg)',
-    color: 'black'
+    color: '#2d2d2d'
   };
 
   const floatingTextBase: CSSProperties = {
-    color: 'black', fontFamily: 'Varela Round, sans-serif', fontWeight: 600,
-    lineHeight: 1.1, pointerEvents: 'none', position: 'absolute', backfaceVisibility: 'hidden'
+    color: '#2d2d2d', fontFamily: 'var(--font-playfair), serif', fontWeight: 600,
+    lineHeight: 1.2, pointerEvents: 'none', position: 'absolute', backfaceVisibility: 'hidden',
+    letterSpacing: '0.02em'
   };
 
   const titleContainerStyle: CSSProperties = {
-    ...floatingTextBase, 
-    fontSize: '2em', 
-    top: '-2%', 
+    ...floatingTextBase,
+    fontSize: '2em',
+    top: '-2%',
     left: '33%',
-    transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`, 
-    width: '90%', 
-    textAlign: 'center', 
-    opacity: 1
+    transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
+    opacity: 1,
+    fontWeight: 500
   };
   
   const subtitleContainerStyle: CSSProperties = {
-    ...floatingTextBase, 
-    fontSize: '1.25rem', 
-    bottom: '10%', 
+    ...floatingTextBase,
+    fontSize: '1.1rem',
+    bottom: '10%',
     left: '65%',
-    transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`, 
-    width: '90%', 
-    textAlign: 'center', 
+    transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
     opacity: 1,
-    fontStyle: 'italic'
+    fontFamily: 'var(--font-inter), sans-serif',
+    fontWeight: 300,
+    color: '#666666',
+    letterSpacing: '0.15em',
+    textTransform: 'uppercase'
   };
 
   const backHeadingStyle: CSSProperties = {
     ...floatingTextBase,
-    fontSize: '38px', 
-    top: '-1.25%', 
+    fontSize: '38px',
+    top: '-1.25%',
     left: '30%',
-    transform: `translateX(-50%) translateZ(-80px) rotateY(180deg) translate(${profilePos.x}px, ${profilePos.y}px)`, 
-    textAlign: 'center', 
+    transform: `translateX(-50%) translateZ(-80px) rotateY(180deg) translate(${profilePos.x}px, ${profilePos.y}px)`,
+    textAlign: 'center',
     opacity: 0,
-    fontWeight: 700,
-    textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+    fontWeight: 500,
+    color: '#faf8f3',
+    textShadow: 'none',
+    fontFamily: 'var(--font-playfair), serif',
+    width: '100%'
   };
 
   const backContentStyle: CSSProperties = {
@@ -273,33 +281,35 @@ const AnimatedCard = () => {
     width: '85%',
     display: 'flex',
     flexDirection: 'column',
-    // gap: '0.em',
     opacity: 0,
-    fontFamily: 'Varela Round, sans-serif',
-    backgroundColor: backColor,
-    padding: '1.25em',
-    borderRadius: '0.9em',
-    backdropFilter: 'none',
-    boxShadow: 'none',
-    color: '#000'
+    fontFamily: 'var(--font-inter), sans-serif',
+    backgroundColor: 'rgba(250, 248, 243, 0.98)',
+    padding: '1.5em',
+    borderRadius: '8px',
+    boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+    color: '#2d2d2d',
+    border: '1px solid rgba(201, 169, 110, 0.2)'
   };
 
   const greentextBlockStyle: CSSProperties = {
-    position: 'absolute', top: '5em', left: '50%',
-    transform: 'translateX(-50%) translateZ(70px)', width: '85%',
-    background: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '1.125em',
-    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.1em', color: '#444',
-    boxShadow: '0 0.25em 1.875em rgba(0,0,0,0.1)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
+    position: 'absolute', top: '50%', left: '50%',
+    transform: 'translate(-50%, -50%) translateZ(70px)', width: '75%',
+    background: 'rgba(250, 248, 243, 0.95)', backdropFilter: 'blur(15px)',
+    border: '1px solid rgba(201, 169, 110, 0.3)', borderRadius: '8px',
+    padding: '1.5em 2em', fontFamily: 'var(--font-inter), sans-serif', fontSize: '0.95em', color: '#2d2d2d',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 2, textAlign: 'center', lineHeight: 1.8, opacity: 1
   };
 
   const sectionHeadingStyle: CSSProperties = {
-    fontSize: '1.125em', 
-    marginBottom: '0.75em',
-    fontWeight: 600,
-    color: '#222',
-    borderBottom: '2px solid rgba(0,0,0,0.1)',
-    paddingBottom: '0.375em'
+    fontSize: '1.15em',
+    marginBottom: '0.9em',
+    fontWeight: 500,
+    color: '#2d2d2d',
+    borderBottom: '1px solid rgba(201, 169, 110, 0.3)',
+    paddingBottom: '0.6em',
+    width: '100%',
+    fontFamily: 'var(--font-playfair), serif',
+    letterSpacing: '0.03em'
   };
 
   const aboutMeStyle: CSSProperties = {
@@ -318,31 +328,33 @@ const AnimatedCard = () => {
   };
 
   const skillTagStyle: CSSProperties = {
-    backgroundColor: 'rgba(73, 80, 246, 0.15)',
-    color: '#4950F6',
-    padding: '0.375em 0.875em',
-    borderRadius: '0.9375em',
-    fontSize: '0.8125em',
-    fontFamily: 'Varela Round, sans-serif',
-    fontWeight: 500,
-    boxShadow: '0 0.125em 0.25em rgba(0,0,0,0.05)',
-    transition: 'all 0.2s ease'
+    backgroundColor: 'rgba(201, 169, 110, 0.12)',
+    color: '#5c4f3a',
+    padding: '0.5em 1.1em',
+    borderRadius: '4px',
+    fontSize: '0.85em',
+    fontFamily: 'var(--font-inter), sans-serif',
+    fontWeight: 400,
+    boxShadow: 'none',
+    border: '1px solid rgba(201, 169, 110, 0.25)',
+    transition: 'all 0.2s ease',
+    letterSpacing: '0.03em'
   };
 
   const educationStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.9em',
-    fontFamily: 'Varela Round, sans-serif',
+    gap: '1em',
+    fontFamily: 'var(--font-inter), sans-serif',
     padding: '0.5em 0',
-    color: '#000'
+    color: '#2d2d2d'
   };
 
   const berkeleyLogoStyle: CSSProperties = {
     width: '5rem',
     height: '5rem',
     objectFit: 'contain',
-    filter: 'drop-shadow(0 0.125em 0.1875em rgba(0,0,0,0.1))',
+    filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
     margin: '0.125em'
   };
 
@@ -366,15 +378,16 @@ const AnimatedCard = () => {
   };
 
   const socialHeadingStyle: CSSProperties = {
-    fontSize: '28px',
-    fontWeight: 600,
+    fontSize: '26px',
+    fontWeight: 500,
     marginBottom: '20px',
-    fontFamily: 'Varela Round, sans-serif',
-    color: '#222',
-    borderBottom: '2px solid rgba(0,0,0,0.1)',
-    paddingBottom: '8px',
+    fontFamily: 'var(--font-playfair), serif',
+    color: '#2d2d2d',
+    borderBottom: '1px solid rgba(201, 169, 110, 0.3)',
+    paddingBottom: '10px',
     width: '100%',
-    textAlign: 'center'
+    textAlign: 'center',
+    letterSpacing: '0.02em'
   };
 
   const socialButtonStyle: CSSProperties = {
@@ -382,16 +395,17 @@ const AnimatedCard = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    padding: '12px 20px',
-    marginBottom: '10px',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: '12px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+    padding: '14px 22px',
+    marginBottom: '12px',
+    backgroundColor: 'rgba(250, 248, 243, 0.95)',
+    borderRadius: '6px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
     cursor: 'pointer',
     transition: 'transform 0.2s ease, background-color 0.2s ease',
-    fontFamily: 'Varela Round, sans-serif',
-    fontWeight: 500,
-    pointerEvents: 'auto'
+    fontFamily: 'var(--font-inter), sans-serif',
+    fontWeight: 400,
+    pointerEvents: 'auto',
+    border: '1px solid rgba(201, 169, 110, 0.2)'
   };
 
   const socialsRef = useRef<HTMLDivElement>(null);
@@ -528,19 +542,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(250, 248, 243, 0.98)',
+            border: '1px solid rgba(201, 169, 110, 0.2)',
+            borderRadius: '6px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             cursor: 'pointer',
-            fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
-            fontWeight: 500
+            fontFamily: 'var(--font-inter), sans-serif',
+            fontSize: '18px',
+            fontWeight: 400
           }}
         >
           <span>YouTube</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="youtube" bgColor="#FF0000" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="youtube" bgColor="#FF0000" fgColor="#FFFFFF" />
         </button>
         
         <button
@@ -550,19 +564,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(250, 248, 243, 0.98)',
+            border: '1px solid rgba(201, 169, 110, 0.2)',
+            borderRadius: '6px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             cursor: 'pointer',
-            fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
-            fontWeight: 500
+            fontFamily: 'var(--font-inter), sans-serif',
+            fontSize: '18px',
+            fontWeight: 400
           }}
         >
           <span>LinkedIn</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="linkedin" bgColor="#0077B5" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="linkedin" bgColor="#0077B5" fgColor="#FFFFFF" />
         </button>
         
         <button
@@ -572,19 +586,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(250, 248, 243, 0.98)',
+            border: '1px solid rgba(201, 169, 110, 0.2)',
+            borderRadius: '6px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             cursor: 'pointer',
-            fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
-            fontWeight: 500
+            fontFamily: 'var(--font-inter), sans-serif',
+            fontSize: '18px',
+            fontWeight: 400
           }}
         >
           <span>GitHub</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="github" bgColor="#232323" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="github" bgColor="#232323" fgColor="#FFFFFF" />
         </button>
         
         <button
@@ -594,19 +608,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '18px 24px',
+            backgroundColor: 'rgba(250, 248, 243, 0.98)',
+            border: '1px solid rgba(201, 169, 110, 0.2)',
+            borderRadius: '6px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             cursor: 'pointer',
-            fontFamily: 'Varela Round, sans-serif',
-            fontSize: '16px',
-            fontWeight: 500
+            fontFamily: 'var(--font-inter), sans-serif',
+            fontSize: '18px',
+            fontWeight: 400
           }}
         >
           <span>Instagram</span>
-          <SocialIcon style={{ height: '30px', width: '30px' }} network="instagram" bgColor="#E4405F" fgColor="#FFFFFF" />
+          <SocialIcon style={{ height: '40px', width: '40px' }} network="instagram" bgColor="#E4405F" fgColor="#FFFFFF" />
         </button>
       </div>
     );
@@ -644,7 +658,7 @@ const AnimatedCard = () => {
     flexDirection: 'column',
     alignItems: 'center',
     pointerEvents: showArrow ? 'auto' : 'none',
-    color: '#444'
+    color: '#c9a96e'
   };
 
   return (
@@ -686,11 +700,8 @@ const AnimatedCard = () => {
           <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
           <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
           <div ref={greentextRef} style={greentextBlockStyle}>
-            {'>be me'}<br/>
-            {'>go to community college'}<br/>
-            {'>win 10 hackathons @ stanford, uc berkeley, ucla, upenn'}<br/>
-            {'>transfer to berkeley'}<br/>
-            {'>...'}
+            <div style={{ fontWeight: 300, fontSize: '0.9em', color: '#666666', marginBottom: '0.8em' }}>ABOUT</div>
+            Applied mathematician and software engineer specializing in full-stack development, computational systems, and algorithmic problem-solving. Proven track record in competitive programming and innovative solution design.
           </div>
           
           {/* Back Face (180 degrees) - Profile */}
@@ -702,20 +713,20 @@ const AnimatedCard = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '0.625em',
+                marginBottom: '1em',
                 width: '100%'
               }}>
-                <img 
-                  src="me.jpg" 
-                  alt="Profile" 
+                <img
+                  src="me.jpg"
+                  alt="Profile"
                   style={{
                     width: 'calc(min(55%, 11.25rem))',
                     height: 'auto',
                     aspectRatio: '1/1',
                     objectFit: 'cover',
                     borderRadius: '50%',
-                    boxShadow: '0 0.25em 0.75em rgba(0,0,0,0.15)',
-                    border: '2px solid rgba(255,255,255,0.8)',
+                    boxShadow: '0 6px 15px rgba(0,0,0,0.15)',
+                    border: '2px solid white',
                     margin: '0.3125em'
                   }}
                 />
@@ -728,17 +739,22 @@ const AnimatedCard = () => {
                   style={berkeleyLogoStyle}
                 />
                 <div>
-                  <p style={{ fontWeight: 'bold', fontStyle: 'italic', fontSize: '0.8375em', marginBottom: '0.25em' }}>B.S. Applied Mathematics</p>
-                  <p style={{ marginBottom: '0.1875em' , fontWeight: 'bold', }}>UC Berkeley</p>
-                  <p style={{ marginBottom: '0.1875em' , fontStyle: 'italic'}}>Expected Graduation: 2027</p>
-                  {/* <p>GPA: 3.86</p> */}
+                  <p style={{ fontWeight: 'bold', fontSize: '1em', marginBottom: '0.3em' }}>B.S. Applied Mathematics</p>
+                  <p style={{ marginBottom: '0.2em', fontSize: '0.95em' }}>UC Berkeley</p>
+                  <p style={{ fontSize: '0.9em' }}>Expected Graduation: 2027</p>
                 </div>
               </div>
             </div>
 
-            <div style={{ marginTop: '0.1875em' }}>
+            <div style={{ marginTop: '1em' }}>
               <h3 style={sectionHeadingStyle}>Skills</h3>
-              <div style={skillsStyle}>
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.6em',
+                marginBottom: '1em',
+                justifyContent: 'center'
+              }}>
                 <span style={skillTagStyle}>Python</span>
                 <span style={skillTagStyle}>C++/CUDA</span>
                 <span style={skillTagStyle}>Go</span>
