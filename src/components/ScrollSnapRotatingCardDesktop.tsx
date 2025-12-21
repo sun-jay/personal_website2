@@ -216,7 +216,7 @@ const ScrollSnapRotatingCardDesktop = () => {
   const sectionStyle: CSSProperties = {
     height: '100vh',
     scrollSnapAlign: 'start',
-    backgroundImage: 'url(https://i.ibb.co/WkDTwLZ/8-Dm-JnBVZ.jpg)',
+    backgroundImage: 'url(https://i.ibb.co/fYXbVS7w/Gemini-Generated-Image-t6tj3lt6tj3lt6tj.png)',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundAttachment: 'fixed',
