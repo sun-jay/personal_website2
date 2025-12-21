@@ -214,9 +214,9 @@ const ScrollSnapRotatingCardDesktop = () => {
     scrollSnapType: 'none', // Remove default scroll snap behavior as we're handling it manually
   };
   const sectionStyle: CSSProperties = { height: '100vh', scrollSnapAlign: 'start' };
-  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#1a1a2e' };
-  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#16213e' };
-  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#0f1419' };
+  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#0a0a0a' };
+  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#1a1410' };
+  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#0f0f0f' };
 
   /* ------------  CARD & FACES & TEXT ------------ */
   const cardContainerStyle: CSSProperties = {
@@ -245,7 +245,7 @@ const ScrollSnapRotatingCardDesktop = () => {
   
   const backFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: '#16213e',
+    backgroundColor: '#1a1410',
     transform: 'rotateY(180deg)'
   };
 
@@ -321,10 +321,10 @@ const ScrollSnapRotatingCardDesktop = () => {
   const greentextBlockStyle: CSSProperties = {
     position: 'absolute', top: '5em', left: '50%',
     transform: 'translateX(-50%) translateZ(70px)', width: '85%',
-    background: 'rgba(20, 25, 35, 0.85)', backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(100, 200, 150, 0.3)', borderRadius: '1.125em',
-    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.5em', color: '#88cc88',
-    boxShadow: '0 0.25em 1.875em rgba(0,0,0,0.3)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
+    background: 'rgba(10, 10, 10, 0.9)', backdropFilter: 'blur(15px)',
+    border: '1px solid rgba(220, 80, 50, 0.4)', borderRadius: '1.125em',
+    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.5em', color: '#ff6b4a',
+    boxShadow: '0 0.5em 2em rgba(220, 80, 50, 0.2)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
   };
 
   const sectionHeadingStyle: CSSProperties = {
@@ -722,7 +722,7 @@ const ScrollSnapRotatingCardDesktop = () => {
     flexDirection: 'column',
     alignItems: 'center',
     pointerEvents: showArrow ? 'auto' : 'none',
-    color: '#c9a96e'
+    color: '#ff6b4a'
   };
 
   return (

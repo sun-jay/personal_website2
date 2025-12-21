@@ -6,8 +6,8 @@
 
 :root {
   --foreground-rgb: 45, 45, 45;
-  --background-rgb: 26, 26, 46;
-  --accent-gold: 201, 169, 110;
+  --background-rgb: 10, 10, 10;
+  --accent-red: 220, 80, 50;
   --card-bg: 250, 248, 243;
   --muted-text: 102, 102, 102;
   --font-playfair: 'Playfair Display', Georgia, serif;

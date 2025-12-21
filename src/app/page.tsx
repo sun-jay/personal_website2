@@ -33,7 +33,7 @@ export default function Home() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#1a1a2e'
+        backgroundColor: '#0a0a0a'
       }}>
         {/* Optional loading indicator if desired */}
       </div>
