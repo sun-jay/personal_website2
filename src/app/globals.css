@@ -3,14 +3,56 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
+  /* Color tokens */
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 20, 20, 22;
+
+  /* Glassmorphic tokens */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-bg-hover: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-hover: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.4);
+
+  /* Button shadows from template */
+  --shadow-button: inset 0 0 1px 1px rgba(255, 255, 255, 0.05),
+    inset 0 0 2px 1px rgba(255, 255, 255, 0.2),
+    inset -1px -1px 1px 0px rgba(0, 0, 0, 0.0),
+    0 0 10px 0 rgba(255, 255, 255, 0.1);
+  --shadow-button-hover: inset 0 0 5px 1px rgba(255, 255, 255, 0.2),
+    inset 0.5px 0.5px 1px 0.5px rgba(255, 255, 255, 0.5),
+    inset -0.5px -0.5px 0.5px 0.5px rgba(0, 0, 0, 0.2),
+    0 0 12px 4px rgba(255, 255, 255, 0.5);
+
+  /* Spacing */
+  --inset: min(2vw, 1.5rem);
+  --sides: 1rem;
+
+  /* Border radius */
+  --radius: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+
+  /* Font */
+  --font-serif: var(--font-instrument-serif), serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-rgb: 0, 0, 0;
+/* Shine animation for buttons */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
   }
 }
 
@@ -29,4 +71,64 @@ body {
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+}
+
+/* Glassmorphic utility classes */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--glass-shadow-hover);
+}
+
+/* Serif accent font class */
+.font-serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+/* Vignette overlay effect - TWEAK THESE VARIABLES */
+.vignette {
+  position: relative;
+
+  /* ========== VIGNETTE CONTROLS ========== */
+  --vignette-start: 70%;
+  /* Where transparent area ends (higher = more visible center) */
+  --vignette-mid: 90%;
+  /* Where medium darkness starts */
+  --vignette-end: 100%;
+  /* Where max darkness is (always 100%) */
+  --vignette-opacity-mid: 0.4;
+  /* Opacity at mid point (0-1) */
+  --vignette-opacity-max: 0.7;
+  /* Max opacity at corners (0-1) */
+  /* ======================================= */
+}
+
+.vignette::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+      transparent var(--vignette-start),
+      rgba(0, 0, 0, var(--vignette-opacity-mid)) var(--vignette-mid),
+      rgba(0, 0, 0, var(--vignette-opacity-max)) var(--vignette-end));
+  z-index: 1;
 }
