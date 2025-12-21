@@ -69,23 +69,24 @@ const ScrollSnapRotatingCardDesktop = () => {
       //   });
       // }
       
-      // Subtle about section animation
+      // Greentext animation
       if (greentextRef.current) {
         animate(greentextRef.current, {
-          translateY: [0, -2, 0],
-          duration: 12000,
-          easing: 'easeInOutSine',
+          translateY: [0, -7, 0],
+          rotateZ: [0, 1, 0],
+          duration: 9000,
+          easing: 'easeInOutCubic',
           direction: 'alternate',
           loop: true
         });
       }
       
-      // Subtle arrow animation
+      // Start arrow animation
       if (arrowRef.current) {
         animate(arrowRef.current, {
-          translateY: [0, -6, 0],
-          duration: 2000,
-          easing: 'easeInOutSine',
+          translateY: [0, -10, 0],
+          duration: 1500,
+          easing: 'easeInOutQuad',
           direction: 'alternate',
           loop: true
         });
@@ -104,10 +105,10 @@ const ScrollSnapRotatingCardDesktop = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
         
-        // Create subtle circular motion
+        // Create circular motion
         const angle = progress * Math.PI * 2;
-        const x = Math.sin(angle) * 2;
-        const y = Math.cos(angle) * 3;
+        const x = Math.sin(angle) * 5;
+        const y = Math.cos(angle) * 8;
         
         setTitlePos({ x, y });
         requestAnimationFrame(animateTitle);
@@ -125,10 +126,10 @@ const ScrollSnapRotatingCardDesktop = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
         
-        // Create subtle circular motion with different phase
+        // Create circular motion with different phase
         const angle = progress * Math.PI * 2 + Math.PI/3; // offset
-        const x = Math.sin(angle) * 2;
-        const y = Math.cos(angle) * 2;
+        const x = Math.sin(angle) * 6;
+        const y = Math.cos(angle) * 4;
         
         setSubtitlePos({ x, y });
         requestAnimationFrame(animateSubtitle);
@@ -146,10 +147,10 @@ const ScrollSnapRotatingCardDesktop = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
         
-        // Create subtle circular motion with unique phase and amplitude
+        // Create circular motion with unique phase and amplitude
         const angle = progress * Math.PI * 2 + Math.PI/5; // different offset
-        const x = Math.sin(angle) * 2;
-        const y = Math.cos(angle) * 2;
+        const x = Math.sin(angle) * 7;
+        const y = Math.cos(angle) * 3;
         
         setProfilePos({ x, y });
         requestAnimationFrame(animateProfile);
@@ -263,30 +264,25 @@ const ScrollSnapRotatingCardDesktop = () => {
 
   const titleContainerStyle: CSSProperties = {
     ...floatingTextBase,
-    fontSize: '2.5em',
-    top: '15%',
-    left: '50%',
-    transform: `translate(-50%, -50%) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`,
+    fontSize: '2em',
+    top: '-2%',
+    left: '33%',
+    transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
-    opacity: 1,
-    fontWeight: 500
+    opacity: 1
   };
   
   const subtitleContainerStyle: CSSProperties = {
     ...floatingTextBase,
-    fontSize: '1.1rem',
-    bottom: '25%',
-    left: '50%',
-    transform: `translate(-50%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
+    fontSize: '1.25rem',
+    bottom: '10%',
+    left: '65%',
+    transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
     opacity: 1,
-    fontFamily: 'var(--font-inter), sans-serif',
-    fontWeight: 300,
-    color: '#666666',
-    letterSpacing: '0.15em',
-    textTransform: 'uppercase'
+    fontStyle: 'italic'
   };
 
   const backHeadingStyle: CSSProperties = {
@@ -323,12 +319,12 @@ const ScrollSnapRotatingCardDesktop = () => {
   };
 
   const greentextBlockStyle: CSSProperties = {
-    position: 'absolute', top: '50%', left: '50%',
-    transform: 'translate(-50%, -50%) translateZ(70px)', width: '75%',
-    background: 'rgba(250, 248, 243, 0.95)', backdropFilter: 'blur(15px)',
-    border: '1px solid rgba(201, 169, 110, 0.3)', borderRadius: '8px',
-    padding: '1.5em 2em', fontFamily: 'var(--font-inter), sans-serif', fontSize: '0.95em', color: '#2d2d2d',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 2, textAlign: 'center', lineHeight: 1.8, opacity: 1
+    position: 'absolute', top: '5em', left: '50%',
+    transform: 'translateX(-50%) translateZ(70px)', width: '85%',
+    background: 'rgba(20, 25, 35, 0.85)', backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(100, 200, 150, 0.3)', borderRadius: '1.125em',
+    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.5em', color: '#88cc88',
+    boxShadow: '0 0.25em 1.875em rgba(0,0,0,0.3)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
   };
 
   const sectionHeadingStyle: CSSProperties = {
@@ -768,8 +764,11 @@ const ScrollSnapRotatingCardDesktop = () => {
           <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
           <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
           <div ref={greentextRef} style={greentextBlockStyle}>
-            <div style={{ fontWeight: 300, fontSize: '0.9em', color: '#666666', marginBottom: '0.8em' }}>ABOUT</div>
-            Applied mathematician and software engineer specializing in full-stack development, computational systems, and algorithmic problem-solving. Proven track record in competitive programming and innovative solution design.
+            {'>be me'}<br/>
+            {'>go to community college'}<br/>
+            {'>win 10 hackathons @ stanford, uc berkeley, ucla, upenn'}<br/>
+            {'>transfer to berkeley'}<br/>
+            {'>...'}
           </div>
           
           {/* Back Face (180 degrees) - Profile */}
