@@ -235,26 +235,29 @@ const AnimatedCard = () => {
   
   const frontFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: 'rgb(250, 248, 243)',
+    backgroundColor: 'rgba(10, 10, 10, 0.7)',
+    backdropFilter: 'blur(10px)',
     transform: 'rotateY(0deg)'
 
   };
-  
+
   const backFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: '#1a1410',
+    backgroundColor: 'rgba(10, 10, 10, 0.7)',
+    backdropFilter: 'blur(10px)',
     transform: 'rotateY(180deg)'
   };
 
   const contactFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: 'rgb(250, 248, 243)',
+    backgroundColor: 'rgba(10, 10, 10, 0.7)',
+    backdropFilter: 'blur(10px)',
     transform: 'rotateY(360deg)',
-    color: '#2d2d2d'
+    color: '#faf8f3'
   };
 
   const floatingTextBase: CSSProperties = {
-    color: '#2d2d2d', fontFamily: 'var(--font-playfair), serif', fontWeight: 600,
+    color: '#faf8f3', fontFamily: 'var(--font-playfair), serif', fontWeight: 600,
     lineHeight: 1.2, pointerEvents: 'none', position: 'absolute', backfaceVisibility: 'hidden',
     letterSpacing: '0.02em'
   };
@@ -307,12 +310,13 @@ const AnimatedCard = () => {
     flexDirection: 'column',
     opacity: 0,
     fontFamily: 'var(--font-inter), sans-serif',
-    backgroundColor: 'rgba(250, 248, 243, 0.98)',
+    backgroundColor: 'rgba(20, 20, 20, 0.8)',
+    backdropFilter: 'blur(10px)',
     padding: '1.5em',
     borderRadius: '8px',
-    boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-    color: '#2d2d2d',
-    border: '1px solid rgba(201, 169, 110, 0.2)'
+    boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+    color: '#faf8f3',
+    border: '1px solid rgba(220, 80, 50, 0.3)'
   };
 
   const greentextBlockStyle: CSSProperties = {
@@ -328,8 +332,8 @@ const AnimatedCard = () => {
     fontSize: '1.15em',
     marginBottom: '0.9em',
     fontWeight: 500,
-    color: '#2d2d2d',
-    borderBottom: '1px solid rgba(201, 169, 110, 0.3)',
+    color: '#faf8f3',
+    borderBottom: '1px solid rgba(220, 80, 50, 0.3)',
     paddingBottom: '0.6em',
     width: '100%',
     fontFamily: 'var(--font-playfair), serif',
@@ -352,15 +356,15 @@ const AnimatedCard = () => {
   };
 
   const skillTagStyle: CSSProperties = {
-    backgroundColor: 'rgba(201, 169, 110, 0.12)',
-    color: '#5c4f3a',
+    backgroundColor: 'rgba(220, 80, 50, 0.15)',
+    color: '#ff6b4a',
     padding: '0.5em 1.1em',
     borderRadius: '4px',
     fontSize: '0.85em',
     fontFamily: 'var(--font-inter), sans-serif',
     fontWeight: 400,
     boxShadow: 'none',
-    border: '1px solid rgba(201, 169, 110, 0.25)',
+    border: '1px solid rgba(220, 80, 50, 0.3)',
     transition: 'all 0.2s ease',
     letterSpacing: '0.03em'
   };
@@ -371,7 +375,7 @@ const AnimatedCard = () => {
     gap: '1em',
     fontFamily: 'var(--font-inter), sans-serif',
     padding: '0.5em 0',
-    color: '#2d2d2d'
+    color: '#faf8f3'
   };
 
   const berkeleyLogoStyle: CSSProperties = {
