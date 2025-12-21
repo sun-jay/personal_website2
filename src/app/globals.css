@@ -5,7 +5,7 @@
 :root {
   /* Color tokens */
   --foreground-rgb: 255, 255, 255;
-  --background-rgb: 20, 20, 22;
+  --background-rgb: 50, 95, 155;
 
   /* Glassmorphic tokens */
   --glass-bg: rgba(255, 255, 255, 0.08);

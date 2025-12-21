@@ -88,7 +88,8 @@ const VideoWithPlaceholder = ({
                 className={className}
                 style={{
                     ...style,
-                    visibility: videoLoaded ? 'visible' : 'hidden',
+                    opacity: videoLoaded ? 1 : 0,
+                    transition: 'opacity 0.8s ease-in-out',
                 }}
             />
         </>
@@ -117,7 +118,7 @@ export const Background = ({
         height: '100%',
         objectFit: 'cover',
         borderRadius: borderRadius,
-        backgroundColor: 'rgb(20, 20, 20)',
+        backgroundColor: 'white',
     };
 
     if (isVideoFile) {
