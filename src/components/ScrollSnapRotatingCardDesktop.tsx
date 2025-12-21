@@ -343,13 +343,15 @@ const ScrollSnapRotatingCardDesktop = () => {
   };
 
   const sectionHeadingStyle: CSSProperties = {
-    fontSize: '1.25em',
+    fontSize: '1.5em',
     marginBottom: '0.75em',
-    fontWeight: 600,
-    color: '#222',
-    borderBottom: '1px solid rgba(0,0,0,0.1)',
+    fontWeight: 400,
+    color: 'white',
+    borderBottom: '1px solid rgba(255,255,255,0.2)',
     paddingBottom: '0.5em',
-    width: '100%'
+    width: '100%',
+    fontFamily: 'var(--font-instrument-serif), serif',
+    fontStyle: 'italic'
   };
 
   const aboutMeStyle: CSSProperties = {
@@ -368,14 +370,17 @@ const ScrollSnapRotatingCardDesktop = () => {
   };
 
   const skillTagStyle: CSSProperties = {
-    backgroundColor: 'rgba(73, 80, 246, 0.15)',
-    color: '#4950F6',
-    padding: '0.4em 0.9em',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    color: 'white',
+    padding: '0.5em 1em',
     borderRadius: '999px',
     fontSize: '0.9em',
     fontFamily: 'Varela Round, sans-serif',
     fontWeight: 500,
-    boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
     transition: 'all 0.2s ease'
   };
 
@@ -385,7 +390,7 @@ const ScrollSnapRotatingCardDesktop = () => {
     gap: '1em',
     fontFamily: 'Varela Round, sans-serif',
     padding: '0.5em 0',
-    color: '#000'
+    color: 'white'
   };
 
   const berkeleyLogoStyle: CSSProperties = {
@@ -398,31 +403,33 @@ const ScrollSnapRotatingCardDesktop = () => {
 
   const socialContainerStyle: CSSProperties = {
     position: 'fixed',
-    top: '50%',
+    top: '52%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '300px',
-    padding: '20px',
-    backgroundColor: 'rgba(255, 245, 235, 0.95)',
+    width: '360px',
+    padding: '24px',
+    backgroundColor: 'transparent',
     borderRadius: '15px',
-    boxShadow: '0 10px 20px rgba(0,0,0,0.08)',
+    boxShadow: 'none',
     opacity: 0,
     fontFamily: 'Varela Round, sans-serif',
     zIndex: 10,
-    pointerEvents: 'auto'
+    pointerEvents: 'auto',
+    gap: '8px'
   };
 
   const socialHeadingStyle: CSSProperties = {
-    fontSize: '28px',
-    fontWeight: 600,
-    marginBottom: '20px',
-    fontFamily: 'Varela Round, sans-serif',
-    color: '#222',
-    borderBottom: '2px solid rgba(0,0,0,0.1)',
-    paddingBottom: '8px',
+    fontSize: '36px',
+    fontWeight: 400,
+    marginBottom: '40px',
+    fontFamily: 'var(--font-instrument-serif), serif',
+    fontStyle: 'italic',
+    color: 'white',
+    borderBottom: 'none',
+    paddingBottom: '0',
     width: '100%',
     textAlign: 'center'
   };
@@ -432,15 +439,20 @@ const ScrollSnapRotatingCardDesktop = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    padding: '12px 20px',
-    marginBottom: '10px',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: '12px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+    padding: '14px 22px',
+    marginBottom: '12px',
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
     cursor: 'pointer',
-    transition: 'transform 0.2s ease, background-color 0.2s ease',
+    transition: 'all 0.3s ease',
     fontFamily: 'Varela Round, sans-serif',
     fontWeight: 500,
+    fontSize: '1.1rem',
+    color: 'white',
     pointerEvents: 'auto'
   };
 
@@ -606,7 +618,7 @@ const ScrollSnapRotatingCardDesktop = () => {
     return (
       <div style={{
         position: 'fixed',
-        top: '50%',
+        top: '48%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         zIndex: contactLinksActive ? 100 : -1,
@@ -615,10 +627,21 @@ const ScrollSnapRotatingCardDesktop = () => {
         transition: 'opacity 0.3s ease',
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
+        gap: '12px',
         width: '85%',
-        maxWidth: '400px'
+        maxWidth: '400px',
+        alignItems: 'center'
       }}>
+        <div style={{
+          fontSize: '42px',
+          fontWeight: 400,
+          marginBottom: '16px',
+          fontFamily: 'var(--font-instrument-serif), serif',
+          fontStyle: 'italic',
+          color: 'white',
+          textAlign: 'center',
+          width: '100%'
+        }}>Contact</div>
         <button
           onClick={() => window.open('https://www.youtube.com/channel/UC2kIgU1hMcvb2DT9CNa5a3g', '_blank')}
           style={{
@@ -626,15 +649,19 @@ const ScrollSnapRotatingCardDesktop = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '18px 24px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            border: 'none',
+            padding: '16px 24px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
             borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '20px',
-            fontWeight: 500
+            fontSize: '18px',
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '12px'
           }}
         >
           <span>YouTube</span>
@@ -648,15 +675,19 @@ const ScrollSnapRotatingCardDesktop = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '18px 24px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            border: 'none',
+            padding: '16px 24px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
             borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '20px',
-            fontWeight: 500
+            fontSize: '18px',
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '12px'
           }}
         >
           <span>LinkedIn</span>
@@ -670,15 +701,19 @@ const ScrollSnapRotatingCardDesktop = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '18px 24px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            border: 'none',
+            padding: '16px 24px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
             borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '20px',
-            fontWeight: 500
+            fontSize: '18px',
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '12px'
           }}
         >
           <span>GitHub</span>
@@ -692,15 +727,19 @@ const ScrollSnapRotatingCardDesktop = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '18px 24px',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            border: 'none',
+            padding: '16px 24px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
             borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
-            fontSize: '20px',
-            fontWeight: 500
+            fontSize: '18px',
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '12px'
           }}
         >
           <span>Instagram</span>
@@ -862,7 +901,7 @@ const ScrollSnapRotatingCardDesktop = () => {
               padding: '30px 20px',
               boxSizing: 'border-box'
             }}>
-              <div style={socialHeadingStyle}>Contact</div>
+              {/* Contact heading is rendered in renderSocialLinks() */}
               {/* No social buttons here - they're rendered separately outside the card */}
             </div>
           </div>
