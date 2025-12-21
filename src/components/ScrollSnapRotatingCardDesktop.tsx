@@ -214,10 +214,10 @@ const ScrollSnapRotatingCardDesktop = () => {
     scrollSnapType: 'none', // Remove default scroll snap behavior as we're handling it manually
   };
   const sectionStyle: CSSProperties = { height: '100vh', scrollSnapAlign: 'start' };
-  // Transparent sections to show video background
-  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'transparent' };
-  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: 'transparent' };
-  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'transparent' };
+  // Colored sections - provide backdrop for glassmorphism effect
+  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'rgb(245, 242, 231)' };
+  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#E63946' };
+  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#2A9D8F' };
 
   /* ------------  CARD & FACES & TEXT ------------ */
   const cardContainerStyle: CSSProperties = {

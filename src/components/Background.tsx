@@ -1,17 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 
 interface BackgroundProps {
   videoSrc?: string;
-  placeholderSrc?: string;
   className?: string;
 }
 
 const Background: React.FC<BackgroundProps> = ({
   videoSrc = '/background.mp4',
-  placeholderSrc = '/placeholder.jpg',
   className = '',
 }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -52,59 +49,42 @@ const Background: React.FC<BackgroundProps> = ({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    zIndex: -1,
+    zIndex: -2,
   };
+
+  // If no video loaded, don't render anything - let the original design show
+  if (videoError || !videoSrc) {
+    return null;
+  }
 
   return (
     <>
       {/* Video background */}
-      {!videoError && (
-        <video
-          ref={videoRef}
-          src={videoSrc}
-          muted
-          playsInline
-          loop
-          preload="auto"
-          style={{
-            ...baseStyles,
-            opacity: videoLoaded ? 1 : 0,
-            transition: 'opacity 0.5s ease-in-out',
-          }}
-          className={className}
-        />
-      )}
+      <video
+        ref={videoRef}
+        src={videoSrc}
+        muted
+        playsInline
+        loop
+        preload="auto"
+        style={{
+          ...baseStyles,
+          opacity: videoLoaded ? 1 : 0,
+          transition: 'opacity 0.5s ease-in-out',
+        }}
+        className={className}
+      />
 
-      {/* Placeholder image - shown while video loads or if video fails */}
-      {(!videoLoaded || videoError) && placeholderSrc && (
+      {/* Subtle dark overlay for better text readability - only when video is loaded */}
+      {videoLoaded && (
         <div
           style={{
             ...baseStyles,
-            opacity: videoLoaded && !videoError ? 0 : 1,
-            transition: 'opacity 0.5s ease-in-out',
-            background: 'rgb(245, 242, 231)',
+            background: 'rgba(0, 0, 0, 0.2)',
+            zIndex: -1,
           }}
-        >
-          {placeholderSrc !== '/placeholder.jpg' && (
-            <Image
-              src={placeholderSrc}
-              alt="Background"
-              fill
-              priority
-              style={{ objectFit: 'cover' }}
-            />
-          )}
-        </div>
+        />
       )}
-
-      {/* Dark overlay for better text readability */}
-      <div
-        style={{
-          ...baseStyles,
-          background: 'rgba(0, 0, 0, 0.3)',
-          zIndex: -1,
-        }}
-      />
     </>
   );
 };

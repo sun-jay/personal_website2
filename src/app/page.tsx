@@ -43,11 +43,8 @@ export default function Home() {
 
   return (
     <div>
-      {/* Video Background */}
-      <Background
-        videoSrc="/background.mp4"
-        placeholderSrc="/placeholder.jpg"
-      />
+      {/* Video Background - shows when /public/background.mp4 exists */}
+      <Background videoSrc="/background.mp4" />
 
       <div style={{ display: isMobile ? 'block' : 'none' }}>
         <ScrollSnapRotatingCardMobile />
