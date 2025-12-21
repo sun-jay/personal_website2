@@ -92,6 +92,18 @@ const VideoWithPlaceholder = ({
                     transition: 'opacity 0.8s ease-in-out',
                 }}
             />
+            {/* Vignette overlay - fades in with video */}
+            <div
+                style={{
+                    position: 'fixed',
+                    inset: 0,
+                    pointerEvents: 'none',
+                    background: 'radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.3) 85%, rgba(0, 0, 0, 0.6) 100%)',
+                    zIndex: 1,
+                    opacity: videoLoaded ? 1 : 0,
+                    transition: 'opacity 1.2s ease-in-out 0.3s',
+                }}
+            />
         </>
     );
 };

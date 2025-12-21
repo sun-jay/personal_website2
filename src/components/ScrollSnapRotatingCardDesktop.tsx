@@ -226,7 +226,7 @@ const ScrollSnapRotatingCardDesktop = () => {
 
   const cardStyle: CSSProperties = {
     width: '100%', height: '100%', transformStyle: 'preserve-3d',
-    transform: `${initialLoad ? 'translateY(-200px) ' : ''}rotateY(${rotation}deg)`, position: 'relative', borderRadius: '24px',
+    transform: `${initialLoad ? 'translateY(-700px) ' : ''}rotateY(${rotation}deg)`, position: 'relative', borderRadius: '24px',
     boxShadow: '0 70px 63px -60px rgba(0,0,0,0.45), 0 0 40px rgba(255,255,255,0.05)', willChange: 'transform',
   };
 

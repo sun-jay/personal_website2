@@ -71,6 +71,17 @@ body {
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+  animation: fadeInBg 1s ease-out forwards;
+}
+
+@keyframes fadeInBg {
+  0% {
+    background: white;
+  }
+
+  100% {
+    background: rgb(var(--background-rgb));
+  }
 }
 
 /* Glassmorphic utility classes */
@@ -103,42 +114,4 @@ body {
   font-style: italic;
 }
 
-/* Vignette overlay effect - TWEAK THESE VARIABLES */
-.vignette {
-  position: relative;
-
-  /* ========== VIGNETTE CONTROLS ========== */
-  --vignette-start: 70%;
-  /* Where transparent area ends (higher = more visible center) */
-  --vignette-mid: 90%;
-  /* Where medium darkness starts */
-  --vignette-end: 100%;
-  /* Where max darkness is (always 100%) */
-  --vignette-opacity-mid: 0.4;
-  /* Opacity at mid point (0-1) */
-  --vignette-opacity-max: 0.7;
-  /* Max opacity at corners (0-1) */
-  /* ======================================= */
-}
-
-.vignette::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center,
-      transparent var(--vignette-start),
-      rgba(0, 0, 0, var(--vignette-opacity-mid)) var(--vignette-mid),
-      rgba(0, 0, 0, var(--vignette-opacity-max)) var(--vignette-end));
-  z-index: 1;
-}
-
-/* Reduce vignette on mobile */
-@media (max-width: 768px) {
-  .vignette {
-    --vignette-start: 80%;
-    --vignette-mid: 95%;
-    --vignette-opacity-mid: 0.2;
-    --vignette-opacity-max: 0.4;
-  }
-}
+/* Vignette is now handled in Background.tsx component */
