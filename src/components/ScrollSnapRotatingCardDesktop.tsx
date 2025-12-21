@@ -247,37 +247,38 @@ const ScrollSnapRotatingCardDesktop = () => {
   
   const cardStyle: CSSProperties = {
     width: '100%', height: '100%', transformStyle: 'preserve-3d',
-    transform: `${initialLoad ? 'translateY(-200px) ' : ''}rotateY(${rotation}deg)`, position: 'relative', borderRadius: '15px',
-    boxShadow: '0 70px 63px -60px rgba(0,0,0,0.45)', willChange: 'transform',
+    transform: `${initialLoad ? 'translateY(-200px) ' : ''}rotateY(${rotation}deg)`, position: 'relative', borderRadius: '24px',
+    boxShadow: 'inset 0 0 1px 1px rgba(255, 255, 255, 0.05), inset 0 0 2px 1px rgba(255, 255, 255, 0.2), 0 0 10px 0 rgba(255, 255, 255, 0.1)', willChange: 'transform',
   };
-  
+
   const faceBase: CSSProperties = {
-    position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden', borderRadius: '15px'
-    
+    position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden', borderRadius: '24px',
+    backdropFilter: 'blur(24px)',
+    border: '2px solid rgba(255, 255, 255, 0.5)'
   };
-  
+
   const frontFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: 'rgb(250, 248, 243)',
+    backgroundColor: 'rgba(250, 250, 250, 0.2)',
     transform: 'rotateY(0deg)'
 
   };
-  
+
   const backFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: '#1a1410',
+    backgroundColor: 'rgba(250, 250, 250, 0.15)',
     transform: 'rotateY(180deg)'
   };
 
   const contactFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: 'rgb(250, 248, 243)',
+    backgroundColor: 'rgba(250, 250, 250, 0.2)',
     transform: 'rotateY(360deg)',
-    color: '#2d2d2d'
+    color: 'rgba(250, 250, 250, 0.98)'
   };
 
   const floatingTextBase: CSSProperties = {
-    color: '#2d2d2d', fontFamily: 'var(--font-playfair), serif', fontWeight: 600,
+    color: 'rgba(250, 250, 250, 0.98)', fontFamily: 'var(--font-instrument-serif), serif', fontWeight: 400,
     lineHeight: 1.2, pointerEvents: 'none', position: 'absolute', backfaceVisibility: 'hidden',
     letterSpacing: '0.02em'
   };
@@ -292,7 +293,7 @@ const ScrollSnapRotatingCardDesktop = () => {
     textAlign: 'center',
     opacity: 1
   };
-  
+
   const subtitleContainerStyle: CSSProperties = {
     ...floatingTextBase,
     fontSize: '1.25rem',
@@ -302,7 +303,8 @@ const ScrollSnapRotatingCardDesktop = () => {
     width: '90%',
     textAlign: 'center',
     opacity: 1,
-    fontStyle: 'italic'
+    fontStyle: 'italic',
+    fontFamily: 'var(--font-geist-sans), sans-serif'
   };
 
   const backHeadingStyle: CSSProperties = {
@@ -313,10 +315,10 @@ const ScrollSnapRotatingCardDesktop = () => {
     transform: `translateX(-50%) translateZ(-80px) rotateY(180deg) translate(${profilePos.x}px, ${profilePos.y}px)`,
     textAlign: 'center',
     opacity: 0,
-    fontWeight: 500,
-    color: '#faf8f3',
+    fontWeight: 400,
+    color: 'rgba(250, 250, 250, 0.98)',
     textShadow: 'none',
-    fontFamily: 'var(--font-playfair), serif',
+    fontFamily: 'var(--font-instrument-serif), serif',
     width: '100%'
   };
 
@@ -329,33 +331,34 @@ const ScrollSnapRotatingCardDesktop = () => {
     display: 'flex',
     flexDirection: 'column',
     opacity: 0,
-    fontFamily: 'var(--font-inter), sans-serif',
-    backgroundColor: 'rgba(250, 248, 243, 0.98)',
+    fontFamily: 'var(--font-geist-sans), sans-serif',
+    backgroundColor: 'rgba(250, 250, 250, 0.15)',
+    backdropFilter: 'blur(24px)',
     padding: '1.5em',
-    borderRadius: '8px',
-    boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-    color: '#2d2d2d',
-    border: '1px solid rgba(201, 169, 110, 0.2)'
+    borderRadius: '16px',
+    boxShadow: 'inset 0 0 1px 1px rgba(255, 255, 255, 0.05), inset 0 0 2px 1px rgba(255, 255, 255, 0.2), 0 0 10px 0 rgba(255, 255, 255, 0.1)',
+    color: 'rgba(250, 250, 250, 0.98)',
+    border: '2px solid rgba(255, 255, 255, 0.5)'
   };
 
   const greentextBlockStyle: CSSProperties = {
     position: 'absolute', top: '5em', left: '50%',
     transform: 'translateX(-50%) translateZ(70px)', width: '85%',
-    background: 'rgba(10, 10, 10, 0.9)', backdropFilter: 'blur(15px)',
-    border: '1px solid rgba(220, 80, 50, 0.4)', borderRadius: '1.125em',
-    padding: '1.125em 1.25em', fontFamily: 'monospace', fontSize: '1.5em', color: '#ff6b4a',
-    boxShadow: '0 0.5em 2em rgba(220, 80, 50, 0.2)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
+    background: 'rgba(250, 250, 250, 0.15)', backdropFilter: 'blur(24px)',
+    border: '2px solid rgba(255, 255, 255, 0.5)', borderRadius: '16px',
+    padding: '1.125em 1.25em', fontFamily: 'var(--font-geist-mono), monospace', fontSize: '1.5em', color: 'rgba(250, 250, 250, 0.98)',
+    boxShadow: 'inset 0 0 1px 1px rgba(255, 255, 255, 0.05), inset 0 0 2px 1px rgba(255, 255, 255, 0.2), 0 0 10px 0 rgba(255, 255, 255, 0.1)', zIndex: 2, textAlign: 'left', lineHeight: 1.5, opacity: 1
   };
 
   const sectionHeadingStyle: CSSProperties = {
     fontSize: '1.15em',
     marginBottom: '0.9em',
-    fontWeight: 500,
-    color: '#2d2d2d',
-    borderBottom: '1px solid rgba(201, 169, 110, 0.3)',
+    fontWeight: 400,
+    color: 'rgba(250, 250, 250, 0.98)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
     paddingBottom: '0.6em',
     width: '100%',
-    fontFamily: 'var(--font-playfair), serif',
+    fontFamily: 'var(--font-instrument-serif), serif',
     letterSpacing: '0.03em'
   };
 
@@ -375,15 +378,15 @@ const ScrollSnapRotatingCardDesktop = () => {
   };
 
   const skillTagStyle: CSSProperties = {
-    backgroundColor: 'rgba(201, 169, 110, 0.12)',
-    color: '#5c4f3a',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    color: 'rgba(250, 250, 250, 0.98)',
     padding: '0.5em 1.1em',
-    borderRadius: '4px',
+    borderRadius: '9999px',
     fontSize: '0.85em',
-    fontFamily: 'var(--font-inter), sans-serif',
-    fontWeight: 400,
-    boxShadow: 'none',
-    border: '1px solid rgba(201, 169, 110, 0.25)',
+    fontFamily: 'var(--font-geist-sans), sans-serif',
+    fontWeight: 500,
+    boxShadow: 'inset 0 0 1px 1px rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
     transition: 'all 0.2s ease',
     letterSpacing: '0.03em'
   };
@@ -392,9 +395,9 @@ const ScrollSnapRotatingCardDesktop = () => {
     display: 'flex',
     alignItems: 'center',
     gap: '1em',
-    fontFamily: 'var(--font-inter), sans-serif',
+    fontFamily: 'var(--font-geist-sans), sans-serif',
     padding: '0.5em 0',
-    color: '#2d2d2d'
+    color: 'rgba(250, 250, 250, 0.98)'
   };
 
   const berkeleyLogoStyle: CSSProperties = {

@@ -2,23 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&display=swap');
 
 :root {
-  --foreground-rgb: 45, 45, 45;
-  --background-rgb: 10, 10, 10;
-  --accent-red: 220, 80, 50;
-  --card-bg: 250, 248, 243;
-  --muted-text: 102, 102, 102;
-  --font-playfair: 'Playfair Display', Georgia, serif;
-  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-}
+  --background: 0 0% 100%;
+  --foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --border: 0 0% 98%;
+  --input: 0 0% 89.8%;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 240, 240, 240;
-    --background-rgb: 15, 20, 25;
-  }
+  --font-geist-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-geist-mono: 'Courier New', 'Consolas', monospace;
+  --font-instrument-serif: 'Instrument Serif', Georgia, serif;
 }
 
 * {
@@ -31,9 +27,10 @@ html,
 body {
   height: 100%;
   overflow: hidden;
+  font-family: var(--font-geist-sans);
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
 }
