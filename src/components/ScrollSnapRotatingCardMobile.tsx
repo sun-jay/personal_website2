@@ -311,12 +311,14 @@ const AnimatedCard = () => {
   };
 
   const sectionHeadingStyle: CSSProperties = {
-    fontSize: '1.125em',
+    fontSize: '1.3em',
     marginBottom: '0.75em',
-    fontWeight: 600,
-    color: '#222',
-    borderBottom: '2px solid rgba(0,0,0,0.1)',
-    paddingBottom: '0.375em'
+    fontWeight: 400,
+    color: 'white',
+    borderBottom: '1px solid rgba(255,255,255,0.2)',
+    paddingBottom: '0.375em',
+    fontFamily: 'var(--font-instrument-serif), serif',
+    fontStyle: 'italic'
   };
 
   const aboutMeStyle: CSSProperties = {
@@ -335,14 +337,17 @@ const AnimatedCard = () => {
   };
 
   const skillTagStyle: CSSProperties = {
-    backgroundColor: 'rgba(73, 80, 246, 0.15)',
-    color: '#4950F6',
-    padding: '0.375em 0.875em',
-    borderRadius: '0.9375em',
-    fontSize: '0.8125em',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    color: 'white',
+    padding: '0.4em 0.9em',
+    borderRadius: '999px',
+    fontSize: '0.85em',
     fontFamily: 'Varela Round, sans-serif',
     fontWeight: 500,
-    boxShadow: '0 0.125em 0.25em rgba(0,0,0,0.05)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
     transition: 'all 0.2s ease'
   };
 
@@ -352,7 +357,7 @@ const AnimatedCard = () => {
     gap: '0.9em',
     fontFamily: 'Varela Round, sans-serif',
     padding: '0.5em 0',
-    color: '#000'
+    color: 'white'
   };
 
   const berkeleyLogoStyle: CSSProperties = {
@@ -365,31 +370,33 @@ const AnimatedCard = () => {
 
   const socialContainerStyle: CSSProperties = {
     position: 'fixed',
-    top: '50%',
+    top: '52%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '300px',
+    width: '320px',
     padding: '20px',
-    backgroundColor: 'rgba(255, 245, 235, 0.95)',
+    backgroundColor: 'transparent',
     borderRadius: '15px',
-    boxShadow: '0 10px 20px rgba(0,0,0,0.08)',
+    boxShadow: 'none',
     opacity: 0,
     fontFamily: 'Varela Round, sans-serif',
     zIndex: 10,
-    pointerEvents: 'auto'
+    pointerEvents: 'auto',
+    gap: '6px'
   };
 
   const socialHeadingStyle: CSSProperties = {
-    fontSize: '28px',
-    fontWeight: 600,
-    marginBottom: '20px',
-    fontFamily: 'Varela Round, sans-serif',
-    color: '#222',
-    borderBottom: '2px solid rgba(0,0,0,0.1)',
-    paddingBottom: '8px',
+    fontSize: '32px',
+    fontWeight: 400,
+    marginBottom: '32px',
+    fontFamily: 'var(--font-instrument-serif), serif',
+    fontStyle: 'italic',
+    color: 'white',
+    borderBottom: 'none',
+    paddingBottom: '0',
     width: '100%',
     textAlign: 'center'
   };
@@ -399,15 +406,20 @@ const AnimatedCard = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    padding: '12px 20px',
+    padding: '14px 20px',
     marginBottom: '10px',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: '12px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
     cursor: 'pointer',
-    transition: 'transform 0.2s ease, background-color 0.2s ease',
+    transition: 'all 0.3s ease',
     fontFamily: 'Varela Round, sans-serif',
     fontWeight: 500,
+    fontSize: '1rem',
+    color: 'white',
     pointerEvents: 'auto'
   };
 
@@ -545,15 +557,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '14px 20px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '14px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
             fontSize: '16px',
-            fontWeight: 500
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '10px'
           }}
         >
           <span>YouTube</span>
@@ -567,15 +583,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '14px 20px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '14px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
             fontSize: '16px',
-            fontWeight: 500
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '10px'
           }}
         >
           <span>LinkedIn</span>
@@ -589,15 +609,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '14px 20px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '14px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
             fontSize: '16px',
-            fontWeight: 500
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '10px'
           }}
         >
           <span>GitHub</span>
@@ -611,15 +635,19 @@ const AnimatedCard = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            padding: '12px 20px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            padding: '14px 20px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '14px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             cursor: 'pointer',
             fontFamily: 'Varela Round, sans-serif',
             fontSize: '16px',
-            fontWeight: 500
+            fontWeight: 500,
+            color: 'white',
+            marginBottom: '10px'
           }}
         >
           <span>Instagram</span>
