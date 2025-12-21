@@ -213,16 +213,36 @@ const ScrollSnapRotatingCardDesktop = () => {
     position: 'relative',
     scrollSnapType: 'none', // Remove default scroll snap behavior as we're handling it manually
   };
-  const sectionStyle: CSSProperties = { height: '100vh', scrollSnapAlign: 'start' };
-  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#0a0a0a' };
-  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#1a1410' };
-  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#0f0f0f' };
+  const sectionStyle: CSSProperties = {
+    height: '100vh',
+    scrollSnapAlign: 'start',
+    backgroundImage: 'url(https://i.ibb.co/WkDTwLZ/8-Dm-JnBVZ.jpg)',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundAttachment: 'fixed',
+    position: 'relative'
+  };
+
+  const overlayStyle: CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    zIndex: 0
+  };
+
+  const beigeStyle: CSSProperties = { ...sectionStyle };
+  const redStyle: CSSProperties   = { ...sectionStyle };
+  const greenStyle: CSSProperties = { ...sectionStyle };
 
   /* ------------  CARD & FACES & TEXT ------------ */
   const cardContainerStyle: CSSProperties = {
     position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
     perspective: '1200px', width: `${cardWidth}px`, height: `${cardHeight}px`, pointerEvents: 'none',
-    transition: 'width 0.4s ease, height 0.4s ease'
+    transition: 'width 0.4s ease, height 0.4s ease',
+    zIndex: 10
   };
   
   const cardStyle: CSSProperties = {
@@ -728,12 +748,15 @@ const ScrollSnapRotatingCardDesktop = () => {
   return (
     <div ref={scrollRef} style={containerStyle}>
       <div style={beigeStyle}>
+        <div style={overlayStyle} />
         <div style={sectionOverlayStyle} data-section="0" />
       </div>
       <div style={redStyle}>
+        <div style={overlayStyle} />
         <div style={sectionOverlayStyle} data-section="1" />
       </div>
       <div style={beigeStyle}>
+        <div style={overlayStyle} />
         <div style={sectionOverlayStyle} data-section="2" />
       </div>
       
