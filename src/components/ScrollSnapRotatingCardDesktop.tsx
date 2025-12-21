@@ -206,17 +206,18 @@ const ScrollSnapRotatingCardDesktop = () => {
 
   /* ------------  LAYOUT ------------ */
   const containerStyle: CSSProperties = {
-    height: '100vh', 
-    overflowY: 'scroll', 
-    scrollBehavior: 'smooth', 
-    WebkitOverflowScrolling: 'touch', 
+    height: '100vh',
+    overflowY: 'scroll',
+    scrollBehavior: 'smooth',
+    WebkitOverflowScrolling: 'touch',
     position: 'relative',
     scrollSnapType: 'none', // Remove default scroll snap behavior as we're handling it manually
   };
   const sectionStyle: CSSProperties = { height: '100vh', scrollSnapAlign: 'start' };
-  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'rgb(245, 242, 231)' };
-  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: '#E63946' };
-  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: '#2A9D8F' };
+  // Transparent sections to show video background
+  const beigeStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'transparent' };
+  const redStyle: CSSProperties   = { ...sectionStyle, backgroundColor: 'transparent' };
+  const greenStyle: CSSProperties = { ...sectionStyle, backgroundColor: 'transparent' };
 
   /* ------------  CARD & FACES & TEXT ------------ */
   const cardContainerStyle: CSSProperties = {
@@ -236,22 +237,30 @@ const ScrollSnapRotatingCardDesktop = () => {
     
   };
   
-  const frontFaceStyle: CSSProperties = { 
-    ...faceBase, 
-    backgroundColor: 'rgb(245, 214, 179)',
+  const frontFaceStyle: CSSProperties = {
+    ...faceBase,
+    backgroundColor: 'rgba(245, 214, 179, 0.85)',
+    backdropFilter: 'blur(24px)',
+    border: '2px solid rgba(255, 255, 255, 0.5)',
+    boxShadow: 'inset 0 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.2), 0 0 20px 0 rgba(255, 255, 255, 0.1)',
     transform: 'rotateY(0deg)'
-    
   };
   
   const backFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: '#E63946',
+    backgroundColor: 'rgba(230, 57, 70, 0.85)',
+    backdropFilter: 'blur(24px)',
+    border: '2px solid rgba(255, 255, 255, 0.3)',
+    boxShadow: 'inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 20px 0 rgba(255, 255, 255, 0.1)',
     transform: 'rotateY(180deg)'
   };
 
   const contactFaceStyle: CSSProperties = {
     ...faceBase,
-    backgroundColor: 'rgba(245, 214, 179)',
+    backgroundColor: 'rgba(245, 214, 179, 0.85)',
+    backdropFilter: 'blur(24px)',
+    border: '2px solid rgba(255, 255, 255, 0.5)',
+    boxShadow: 'inset 0 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.2), 0 0 20px 0 rgba(255, 255, 255, 0.1)',
     transform: 'rotateY(360deg)',
     color: 'black'
   };
@@ -262,26 +271,30 @@ const ScrollSnapRotatingCardDesktop = () => {
   };
 
   const titleContainerStyle: CSSProperties = {
-    ...floatingTextBase, 
-    fontSize: '2em', 
-    top: '-2%', 
+    ...floatingTextBase,
+    fontSize: '2.5em',
+    top: '-2%',
     left: '33%',
-    transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`, 
-    width: '90%', 
-    textAlign: 'center', 
-    opacity: 1
+    transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
+    opacity: 1,
+    fontFamily: 'var(--font-instrument-serif), Georgia, serif',
+    fontStyle: 'italic',
+    fontWeight: 400,
   };
   
   const subtitleContainerStyle: CSSProperties = {
-    ...floatingTextBase, 
-    fontSize: '1.25rem', 
-    bottom: '10%', 
+    ...floatingTextBase,
+    fontSize: '1.5rem',
+    bottom: '10%',
     left: '65%',
-    transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`, 
-    width: '90%', 
-    textAlign: 'center', 
+    transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
     opacity: 1,
-    fontStyle: 'italic'
+    fontStyle: 'italic',
+    fontFamily: 'var(--font-instrument-serif), Georgia, serif',
   };
 
   const backHeadingStyle: CSSProperties = {
