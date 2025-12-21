@@ -770,7 +770,7 @@ const ScrollSnapRotatingCardDesktop = () => {
     flexDirection: 'column',
     alignItems: 'center',
     pointerEvents: showArrow ? 'auto' : 'none',
-    color: '#444'
+    color: 'white'
   };
 
   return (
