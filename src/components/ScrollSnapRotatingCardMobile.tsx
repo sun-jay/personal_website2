@@ -743,7 +743,8 @@ const AnimatedCard = () => {
             {'>go to community college'}<br />
             {'>win 10 hackathons @ stanford, uc berkeley, ucla, upenn'}<br />
             {'>transfer to berkeley'}<br />
-            {'>...'}
+            {'>join stripe'}<br />
+            {'>im just getting started...'}
           </div>
 
           {/* Back Face (180 degrees) - Profile */}
