@@ -285,7 +285,7 @@ const ScrollSnapRotatingCardDesktop = () => {
   const subtitleContainerStyle: CSSProperties = {
     ...floatingTextBase,
     fontSize: '1.5rem',
-    bottom: '10%',
+    bottom: '4%',
     left: '65%',
     transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
     width: '90%',
