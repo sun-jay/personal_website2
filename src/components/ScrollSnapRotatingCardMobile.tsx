@@ -743,6 +743,7 @@ const AnimatedCard = () => {
             {'>go to community college'}<br />
             {'>win 10 hackathons @ stanford, uc berkeley, ucla, upenn'}<br />
             {'>transfer to berkeley'}<br />
+            {'>join stripe in ny'}<br />
             {'>...'}
           </div>
 
