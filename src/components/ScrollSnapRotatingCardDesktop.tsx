@@ -285,7 +285,7 @@ const ScrollSnapRotatingCardDesktop = () => {
   const subtitleContainerStyle: CSSProperties = {
     ...floatingTextBase,
     fontSize: '1.5rem',
-    bottom: '10%',
+    bottom: '4%',
     left: '65%',
     transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
     width: '90%',
@@ -824,6 +824,7 @@ const ScrollSnapRotatingCardDesktop = () => {
             {'>go to community college'}<br />
             {'>win 10 hackathons @ stanford, uc berkeley, ucla, upenn'}<br />
             {'>transfer to berkeley'}<br />
+            {'>join stripe in ny'}<br />
             {'>...'}
           </div>
 
