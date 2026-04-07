@@ -11,6 +11,9 @@ const AnimatedCard = () => {
   const cardRef = useRef<HTMLDivElement>(null);
   const titleContainerRef = useRef<HTMLDivElement>(null);
   const subtitleContainerRef = useRef<HTMLDivElement>(null);
+  const titleLetterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const subtitleLetterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const [textRevealed, setTextRevealed] = useState(false);
   const greentextRef = useRef<HTMLDivElement>(null);
   const backHeadingRef = useRef<HTMLHeadingElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -172,11 +175,43 @@ const AnimatedCard = () => {
           setTimeout(() => {
             setBackColor('#F5F2E7');
             setInitialLoad(false);
+            setTextRevealed(true);
           }, 1000);
         }
       });
     }, 50);
   }, []);
+
+  /* ------------ LETTER STAGGER REVEAL ------------ */
+  useEffect(() => {
+    if (!textRevealed) return;
+
+    const titleLetters = titleLetterRefs.current.filter(Boolean) as HTMLSpanElement[];
+    const subtitleLetters = subtitleLetterRefs.current.filter(Boolean) as HTMLSpanElement[];
+
+    // Animate title letters
+    titleLetters.forEach((el, i) => {
+      animate(el, {
+        opacity: [0, 1],
+        translateY: [12, 0],
+        duration: 400,
+        delay: i * 90,
+        ease: 'outCubic',
+      });
+    });
+
+    // Animate subtitle letters after title finishes
+    const titleDuration = titleLetters.length * 90 + 400;
+    subtitleLetters.forEach((el, i) => {
+      animate(el, {
+        opacity: [0, 1],
+        translateY: [10, 0],
+        duration: 350,
+        delay: titleDuration + 200 + i * 70,
+        ease: 'outCubic',
+      });
+    });
+  }, [textRevealed]);
 
   /* ------------  LAYOUT ------------ */
   const containerStyle: CSSProperties = {
@@ -736,8 +771,28 @@ const AnimatedCard = () => {
         <div ref={cardRef} style={cardStyle}>
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
-          <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
-          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
+          <div ref={titleContainerRef} style={titleContainerStyle}>
+            {'Sunny Jayaram'.split('').map((char, i) => (
+              <span
+                key={i}
+                ref={el => { titleLetterRefs.current[i] = el; }}
+                style={{ display: 'inline-block', opacity: 0, whiteSpace: char === ' ' ? 'pre' : undefined }}
+              >
+                {char}
+              </span>
+            ))}
+          </div>
+          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>
+            {'Full Stack Developer'.split('').map((char, i) => (
+              <span
+                key={i}
+                ref={el => { subtitleLetterRefs.current[i] = el; }}
+                style={{ display: 'inline-block', opacity: 0, whiteSpace: char === ' ' ? 'pre' : undefined }}
+              >
+                {char}
+              </span>
+            ))}
+          </div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'>be me'}<br />
             {'>go to community college'}<br />
