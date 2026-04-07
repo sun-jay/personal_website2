@@ -11,19 +11,9 @@ const AnimatedCard = () => {
   const cardRef = useRef<HTMLDivElement>(null);
   const titleContainerRef = useRef<HTMLDivElement>(null);
   const subtitleContainerRef = useRef<HTMLDivElement>(null);
-  const titleLetterRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const subtitleLetterRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const [textRevealed, setTextRevealed] = useState(false);
   const greentextRef = useRef<HTMLDivElement>(null);
   const backHeadingRef = useRef<HTMLHeadingElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  // Khoshnus handwriting animation refs and state
-  const titleSvgRef = useRef<SVGSVGElement>(null);
-  const subtitleSvgRef = useRef<SVGSVGElement>(null);
-  const [khoshnusReady, setKhoshnusReady] = useState(false);
-  const [titleHandwritingDone, setTitleHandwritingDone] = useState(false);
-  const [subtitleHandwritingDone, setSubtitleHandwritingDone] = useState(false);
   const [cardWidth, setCardWidth] = useState(270);
   const [cardHeight, setCardHeight] = useState(413);
   const [rotation, setRotation] = useState(0);
@@ -51,6 +41,10 @@ const AnimatedCard = () => {
   // Add initialLoad state to control startup animation
   const [initialLoad, setInitialLoad] = useState(true);
 
+  // Clip-path text reveal states
+  const [titleRevealed, setTitleRevealed] = useState(false);
+  const [subtitleRevealed, setSubtitleRevealed] = useState(false);
+
   /* ------------  CUSTOM DAMPED EASING  ------------ */
   const dampedOscillation = (t: number) => {
     const ti = t * t;
@@ -62,9 +56,8 @@ const AnimatedCard = () => {
 
   /* ------------ FLOATING ANIMATIONS ------------ */
   useEffect(() => {
-    // Card animation removed for stability, but add greentext animation
+    // Greentext animation
     const startFloatingAnimations = () => {
-      // Greentext animation
       if (greentextRef.current) {
         animate(greentextRef.current, {
           translateY: [0, -7, 0],
@@ -77,7 +70,6 @@ const AnimatedCard = () => {
       }
     };
 
-    // Start greentext animation
     startFloatingAnimations();
 
     // Title animation using state
@@ -88,12 +80,9 @@ const AnimatedCard = () => {
       const animateTitle = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
-
-        // Create circular motion
         const angle = progress * Math.PI * 2;
         const x = Math.sin(angle) * 5;
         const y = Math.cos(angle) * 8;
-
         setTitlePos({ x, y });
         requestAnimationFrame(animateTitle);
       };
@@ -109,12 +98,9 @@ const AnimatedCard = () => {
       const animateSubtitle = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
-
-        // Create circular motion with different phase
-        const angle = progress * Math.PI * 2 + Math.PI / 3; // offset
+        const angle = progress * Math.PI * 2 + Math.PI / 3;
         const x = Math.sin(angle) * 6;
         const y = Math.cos(angle) * 4;
-
         setSubtitlePos({ x, y });
         requestAnimationFrame(animateSubtitle);
       };
@@ -130,12 +116,9 @@ const AnimatedCard = () => {
       const animateProfile = () => {
         const elapsed = Date.now() - startTime;
         const progress = (elapsed % duration) / duration;
-
-        // Create circular motion with unique phase and amplitude
-        const angle = progress * Math.PI * 2 + Math.PI / 5; // different offset
+        const angle = progress * Math.PI * 2 + Math.PI / 5;
         const x = Math.sin(angle) * 7;
         const y = Math.cos(angle) * 3;
-
         setProfilePos({ x, y });
         requestAnimationFrame(animateProfile);
       };
@@ -143,34 +126,26 @@ const AnimatedCard = () => {
       return requestAnimationFrame(animateProfile);
     };
 
-    // Start only the text animations
     const titleAnimId = titleAnimation();
     const subtitleAnimId = subtitleAnimation();
     const profileAnimId = profileAnimation();
 
-    // Return cleanup function
     return () => {
-      // Clean up text animations
       cancelAnimationFrame(titleAnimId);
       cancelAnimationFrame(subtitleAnimId);
       cancelAnimationFrame(profileAnimId);
-
-      // Reset positions
       if (greentextRef.current) animate(greentextRef.current, { translateY: 0, translateX: 0, rotateZ: 0, duration: 0 });
-
-      // Reset text positions
       setTitlePos({ x: 0, y: 0 });
       setSubtitlePos({ x: 0, y: 0 });
       setProfilePos({ x: 0, y: 0 });
     };
-  }, []); // Empty dependency array so it runs once on mount
+  }, []);
 
   /* ------------  STARTUP ANIMATION  ------------ */
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
 
-    // Small delay to ensure initial position is rendered first
     setTimeout(() => {
       animate(el, {
         rotateY: 360,
@@ -182,137 +157,63 @@ const AnimatedCard = () => {
           setTimeout(() => {
             setBackColor('#F5F2E7');
             setInitialLoad(false);
-            setTextRevealed(true);
+            // Start title clip-path reveal after card settles
+            setTitleRevealed(true);
           }, 1000);
         }
       });
     }, 50);
   }, []);
 
-  /* ------------ KHOSHNUS HANDWRITING ANIMATION ------------ */
+  /* ------------ CLIP-PATH TEXT REVEAL ------------ */
   useEffect(() => {
-    if (!textRevealed) return;
+    if (!titleRevealed) return;
 
-    // Dynamically import khoshnus (browser-only library)
-    const runHandwriting = async () => {
-      try {
-        // Ensure a <style> tag exists for khoshnus to inject keyframes into
-        if (!document.querySelector('style')) {
-          document.head.appendChild(document.createElement('style'));
-        }
-
-        // Load Google Fonts for the calligraphy animation
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/css2?family=Parisienne&display=swap';
-        document.head.appendChild(link);
-
-        const { Manuscript } = await import('khoshnus');
-
-        // --- Title handwriting ---
-        const titleConfig = {
-          svgId: 'khoshnus-title',
-          font: 'Parisienne',
-          fontSize: '38px',
-          start: {
-            startStrokeDashoffset: 100,
-            startStroke: 'white',
-            startStrokeWidth: 0.0000000001,
-            startFill: 'transparent',
-          },
-          end: {
-            endStrokeDashoffset: 0,
-            endStroke: 'transparent',
-            endStrokeWidth: 0.3,
-            endFill: 'white',
-          },
-          durations: {
-            strokeDashoffsetDuration: 2500,
-            strokeWidthDuration: 2000,
-            strokeDuration: 2000,
-            fillDuration: 3000,
-          },
-        };
-
-        const titleManuscript = new Manuscript(titleConfig);
-        titleManuscript.write('Sunny Jayaram', {
-          textElementAttributes: {
-            x: '50%',
-            y: '50%',
-            textAnchor: 'middle',
-            dominantBaseline: 'middle',
-          },
-          writeConfiguration: {
-            eachLetterDelay: 120,
-            delayOperation: 0,
-          },
-        });
-
-        // Calculate when title animation finishes:
-        // last letter delay + fill duration
-        const titleLetterCount = 'Sunny Jayaram'.length;
-        const titleTotalMs = titleLetterCount * 120 + 3000;
-
-        // After title animation fills in, start crossfade and subtitle
-        setTimeout(() => {
-          setTitleHandwritingDone(true);
-
-          // --- Subtitle handwriting ---
-          const subtitleConfig = {
-            svgId: 'khoshnus-subtitle',
-            font: 'Parisienne',
-            fontSize: '20px',
-            start: {
-              startStrokeDashoffset: 100,
-              startStroke: 'white',
-              startStrokeWidth: 0.0000000001,
-              startFill: 'transparent',
-            },
-            end: {
-              endStrokeDashoffset: 0,
-              endStroke: 'transparent',
-              endStrokeWidth: 0.25,
-              endFill: 'white',
-            },
-            durations: {
-              strokeDashoffsetDuration: 2000,
-              strokeWidthDuration: 1800,
-              strokeDuration: 1800,
-              fillDuration: 2500,
-            },
-          };
-
-          const subtitleManuscript = new Manuscript(subtitleConfig);
-          subtitleManuscript.write('Full Stack Developer', {
-            textElementAttributes: {
-              x: '50%',
-              y: '50%',
-              textAnchor: 'middle',
-              dominantBaseline: 'middle',
-            },
-            writeConfiguration: {
-              eachLetterDelay: 100,
-              delayOperation: 0,
-            },
-          });
-
-          const subtitleLetterCount = 'Full Stack Developer'.length;
-          const subtitleTotalMs = subtitleLetterCount * 100 + 2500;
-
+    const titleEl = titleContainerRef.current;
+    if (titleEl) {
+      const titleProxy = { progress: 0 };
+      animate(titleProxy, {
+        progress: 100,
+        duration: 1500,
+        ease: 'easeOutCubic',
+        onUpdate: () => {
+          const p = titleProxy.progress;
+          titleEl.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
+          (titleEl.style as any).webkitClipPath = `inset(0 ${100 - p}% 0 0)`;
+        },
+        complete: () => {
+          titleEl.style.clipPath = 'none';
+          (titleEl.style as any).webkitClipPath = 'none';
           setTimeout(() => {
-            setSubtitleHandwritingDone(true);
-          }, subtitleTotalMs);
-        }, titleTotalMs);
-      } catch (err) {
-        // Fallback: just show the text immediately if khoshnus fails
-        console.error('Khoshnus animation failed, falling back:', err);
-        setTitleHandwritingDone(true);
-        setSubtitleHandwritingDone(true);
-      }
-    };
+            setSubtitleRevealed(true);
+          }, 200);
+        }
+      } as any);
+    }
+  }, [titleRevealed]);
 
-    runHandwriting();
-  }, [textRevealed]);
+  useEffect(() => {
+    if (!subtitleRevealed) return;
+
+    const subtitleEl = subtitleContainerRef.current;
+    if (subtitleEl) {
+      const subtitleProxy = { progress: 0 };
+      animate(subtitleProxy, {
+        progress: 100,
+        duration: 1000,
+        ease: 'easeOutCubic',
+        onUpdate: () => {
+          const p = subtitleProxy.progress;
+          subtitleEl.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
+          (subtitleEl.style as any).webkitClipPath = `inset(0 ${100 - p}% 0 0)`;
+        },
+        complete: () => {
+          subtitleEl.style.clipPath = 'none';
+          (subtitleEl.style as any).webkitClipPath = 'none';
+        }
+      } as any);
+    }
+  }, [subtitleRevealed]);
 
   /* ------------  LAYOUT ------------ */
   const containerStyle: CSSProperties = {
@@ -380,26 +281,13 @@ const AnimatedCard = () => {
     transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
-    opacity: titleHandwritingDone ? 1 : 0,
-    transition: 'opacity 0.8s ease-in-out',
+    opacity: 1,
     fontFamily: 'var(--font-instrument-serif), serif',
     fontStyle: 'italic',
     fontWeight: 400,
-    letterSpacing: '0.02em'
-  };
-
-  // SVG overlay for khoshnus title handwriting animation
-  const titleSvgStyle: CSSProperties = {
-    ...floatingTextBase,
-    top: '-3%',
-    left: '33%',
-    transform: `translate(-50%, 0) translateZ(91px) translate(${titlePos.x}px, ${titlePos.y}px)`,
-    width: '90%',
-    textAlign: 'center',
-    opacity: titleHandwritingDone ? 0 : (textRevealed ? 1 : 0),
-    transition: 'opacity 0.8s ease-in-out',
-    pointerEvents: 'none',
-    overflow: 'visible',
+    letterSpacing: '0.02em',
+    clipPath: titleRevealed ? undefined : 'inset(0 100% 0 0)',
+    WebkitClipPath: titleRevealed ? undefined : 'inset(0 100% 0 0)',
   };
 
   const subtitleContainerStyle: CSSProperties = {
@@ -410,25 +298,12 @@ const AnimatedCard = () => {
     transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
-    opacity: subtitleHandwritingDone ? 1 : 0,
-    transition: 'opacity 0.8s ease-in-out',
+    opacity: 1,
     fontFamily: 'var(--font-instrument-serif), serif',
     fontStyle: 'italic',
-    fontWeight: 400
-  };
-
-  // SVG overlay for khoshnus subtitle handwriting animation
-  const subtitleSvgStyle: CSSProperties = {
-    ...floatingTextBase,
-    bottom: '10%',
-    left: '65%',
-    transform: `translate(-40%, -50%) translateZ(91px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
-    width: '90%',
-    textAlign: 'center',
-    opacity: subtitleHandwritingDone ? 0 : (titleHandwritingDone || textRevealed ? 1 : 0),
-    transition: 'opacity 0.8s ease-in-out',
-    pointerEvents: 'none',
-    overflow: 'visible',
+    fontWeight: 400,
+    clipPath: subtitleRevealed ? undefined : 'inset(0 100% 0 0)',
+    WebkitClipPath: subtitleRevealed ? undefined : 'inset(0 100% 0 0)',
   };
 
   const backHeadingStyle: CSSProperties = {
@@ -600,33 +475,24 @@ const AnimatedCard = () => {
         const scrollTop = container.scrollTop;
         const sectionHeight = container.clientHeight;
 
-        // Calculate rotation for full 360 degrees across all three sections
         const newRot = (scrollTop / (sectionHeight * 2)) * 360;
 
-        // Opacity calculations for three faces
-        // Front face (0-180): visible 0-90, fading 90-180
         const frontOpacity = newRot <= 90 ? 1 : newRot >= 180 ? 0 : 1 - (newRot - 90) / 90;
 
-        // Back face (profile - 180-360): fading in 90-180, visible 180-270, fading out 270-360
         const backOpacity =
           newRot <= 90 ? 0 :
             newRot <= 180 ? (newRot - 90) / 90 :
               newRot <= 270 ? 1 :
                 1 - (newRot - 270) / 90;
 
-        // Contact face (third face): fading in 270-360
         const contactOpacity = newRot <= 270 ? 0 : (newRot - 270) / 90;
 
-        // Only show social links when substantially rotated to contact section
-        // This prevents them from interfering with scrolling when not visible
         setShowSocialLinks(newRot >= 330);
         setContactLinksActive(newRot >= 350);
 
-        // Calculate expansion based on scroll position
         const expansionThreshold = sectionHeight * 0.1;
         const expansionFactor = Math.min(1, Math.max(0, (scrollTop - expansionThreshold) / (sectionHeight * 0.3)));
 
-        // Calculate new card dimensions
         const targetWidth = 270 + (100 * expansionFactor);
         const targetHeight = 413 + (100 * expansionFactor);
 
@@ -636,21 +502,10 @@ const AnimatedCard = () => {
 
         animate(cardRef.current!, { rotateY: newRot, duration: 0, ease: 'linear' });
 
-        // Animate front face elements
-        if (titleContainerRef.current) animate(titleContainerRef.current, { opacity: titleHandwritingDone ? frontOpacity : 0, duration: 300, ease: dampedOscillation as any });
-        if (subtitleContainerRef.current) animate(subtitleContainerRef.current, { opacity: subtitleHandwritingDone ? frontOpacity : 0, duration: 300, ease: dampedOscillation as any });
-        // Also fade SVG overlays with scroll
-        if (titleSvgRef.current?.parentElement) {
-          const svgParent = titleSvgRef.current.parentElement as HTMLElement;
-          svgParent.style.opacity = String(titleHandwritingDone ? 0 : frontOpacity);
-        }
-        if (subtitleSvgRef.current?.parentElement) {
-          const svgParent = subtitleSvgRef.current.parentElement as HTMLElement;
-          svgParent.style.opacity = String(subtitleHandwritingDone ? 0 : frontOpacity);
-        }
+        if (titleContainerRef.current) animate(titleContainerRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
+        if (subtitleContainerRef.current) animate(subtitleContainerRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
         if (greentextRef.current) animate(greentextRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
 
-        // Animate back face elements
         if (backHeadingRef.current) animate(backHeadingRef.current, { opacity: backOpacity, duration: 300, ease: dampedOscillation as any });
         if (profileRef.current) setTimeout(() => {
           if (profileRef.current) {
@@ -658,10 +513,8 @@ const AnimatedCard = () => {
           }
         }, 250);
 
-        // Animate contact face
         if (contactFaceRef.current) animate(contactFaceRef.current, { opacity: contactOpacity, duration: 100, ease: 'linear' });
 
-        // Hide arrow only when approaching the third section
         if (scrollTop > sectionHeight * 1.7) {
           setShowArrow(false);
         } else {
@@ -674,12 +527,10 @@ const AnimatedCard = () => {
     }
   };
 
-  // Safe click handler that only works when links should be active
   const handleSafeClick = (url: string) => (e: React.MouseEvent) => {
     if (contactLinksActive) {
       window.open(url, '_blank');
     } else {
-      // Prevent default and stop propagation to ensure the click doesn't do anything
       e.preventDefault();
       e.stopPropagation();
     }
@@ -691,10 +542,8 @@ const AnimatedCard = () => {
     return () => el?.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Add state to track which section is currently visible
   const [currentSection, setCurrentSection] = useState(0);
 
-  // Create a non-blocking transparent overlay for each section to better detect which section is active
   const sectionOverlayStyle: CSSProperties = {
     position: 'absolute',
     top: 0,
@@ -705,7 +554,6 @@ const AnimatedCard = () => {
     pointerEvents: 'none'
   };
 
-  // Render social links outside the card when they should be visible
   const renderSocialLinks = () => {
     if (!showSocialLinks) return null;
 
@@ -832,17 +680,12 @@ const AnimatedCard = () => {
     );
   };
 
-  // Handle arrow click to scroll to next section
   const handleArrowClick = () => {
     if (scrollRef.current) {
       const sectionHeight = scrollRef.current.clientHeight;
       const currentScroll = scrollRef.current.scrollTop;
-
-      // Determine target section (first or second)
       const isFirstSection = currentScroll < sectionHeight * 0.5;
       const targetScroll = isFirstSection ? sectionHeight : sectionHeight * 2;
-
-      // Use browser's built-in smooth scroll
       scrollRef.current.scrollTo({
         top: targetScroll,
         behavior: 'smooth'
@@ -850,7 +693,6 @@ const AnimatedCard = () => {
     }
   };
 
-  // Arrow styling
   const arrowStyle: CSSProperties = {
     position: 'fixed',
     bottom: '3%',
@@ -912,29 +754,7 @@ const AnimatedCard = () => {
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
           <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
-          <div style={titleSvgStyle}>
-            <svg
-              ref={titleSvgRef}
-              id="khoshnus-title"
-              width="100%"
-              height="80"
-              viewBox="0 0 300 60"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ overflow: 'visible' }}
-            />
-          </div>
           <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
-          <div style={subtitleSvgStyle}>
-            <svg
-              ref={subtitleSvgRef}
-              id="khoshnus-subtitle"
-              width="100%"
-              height="50"
-              viewBox="0 0 300 40"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ overflow: 'visible' }}
-            />
-          </div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'>be me'}<br />
             {'>go to community college'}<br />
