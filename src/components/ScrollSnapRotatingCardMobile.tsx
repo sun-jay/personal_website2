@@ -17,6 +17,13 @@ const AnimatedCard = () => {
   const greentextRef = useRef<HTMLDivElement>(null);
   const backHeadingRef = useRef<HTMLHeadingElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Khoshnus handwriting animation refs and state
+  const titleSvgRef = useRef<SVGSVGElement>(null);
+  const subtitleSvgRef = useRef<SVGSVGElement>(null);
+  const [khoshnusReady, setKhoshnusReady] = useState(false);
+  const [titleHandwritingDone, setTitleHandwritingDone] = useState(false);
+  const [subtitleHandwritingDone, setSubtitleHandwritingDone] = useState(false);
   const [cardWidth, setCardWidth] = useState(270);
   const [cardHeight, setCardHeight] = useState(413);
   const [rotation, setRotation] = useState(0);
@@ -182,35 +189,129 @@ const AnimatedCard = () => {
     }, 50);
   }, []);
 
-  /* ------------ LETTER STAGGER REVEAL ------------ */
+  /* ------------ KHOSHNUS HANDWRITING ANIMATION ------------ */
   useEffect(() => {
     if (!textRevealed) return;
 
-    const titleLetters = titleLetterRefs.current.filter(Boolean) as HTMLSpanElement[];
-    const subtitleLetters = subtitleLetterRefs.current.filter(Boolean) as HTMLSpanElement[];
+    // Dynamically import khoshnus (browser-only library)
+    const runHandwriting = async () => {
+      try {
+        // Ensure a <style> tag exists for khoshnus to inject keyframes into
+        if (!document.querySelector('style')) {
+          document.head.appendChild(document.createElement('style'));
+        }
 
-    // Animate title letters
-    titleLetters.forEach((el, i) => {
-      animate(el, {
-        opacity: [0, 1],
-        translateY: [12, 0],
-        duration: 400,
-        delay: i * 90,
-        ease: 'outCubic',
-      });
-    });
+        // Load Google Fonts for the calligraphy animation
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Parisienne&display=swap';
+        document.head.appendChild(link);
 
-    // Animate subtitle letters after title finishes
-    const titleDuration = titleLetters.length * 90 + 400;
-    subtitleLetters.forEach((el, i) => {
-      animate(el, {
-        opacity: [0, 1],
-        translateY: [10, 0],
-        duration: 350,
-        delay: titleDuration + 200 + i * 70,
-        ease: 'outCubic',
-      });
-    });
+        const { Manuscript } = await import('khoshnus');
+
+        // --- Title handwriting ---
+        const titleConfig = {
+          svgId: 'khoshnus-title',
+          font: 'Parisienne',
+          fontSize: '38px',
+          start: {
+            startStrokeDashoffset: 100,
+            startStroke: 'white',
+            startStrokeWidth: 0.0000000001,
+            startFill: 'transparent',
+          },
+          end: {
+            endStrokeDashoffset: 0,
+            endStroke: 'transparent',
+            endStrokeWidth: 0.3,
+            endFill: 'white',
+          },
+          durations: {
+            strokeDashoffsetDuration: 2500,
+            strokeWidthDuration: 2000,
+            strokeDuration: 2000,
+            fillDuration: 3000,
+          },
+        };
+
+        const titleManuscript = new Manuscript(titleConfig);
+        titleManuscript.write('Sunny Jayaram', {
+          textElementAttributes: {
+            x: '50%',
+            y: '50%',
+            textAnchor: 'middle',
+            dominantBaseline: 'middle',
+          },
+          writeConfiguration: {
+            eachLetterDelay: 120,
+            delayOperation: 0,
+          },
+        });
+
+        // Calculate when title animation finishes:
+        // last letter delay + fill duration
+        const titleLetterCount = 'Sunny Jayaram'.length;
+        const titleTotalMs = titleLetterCount * 120 + 3000;
+
+        // After title animation fills in, start crossfade and subtitle
+        setTimeout(() => {
+          setTitleHandwritingDone(true);
+
+          // --- Subtitle handwriting ---
+          const subtitleConfig = {
+            svgId: 'khoshnus-subtitle',
+            font: 'Parisienne',
+            fontSize: '20px',
+            start: {
+              startStrokeDashoffset: 100,
+              startStroke: 'white',
+              startStrokeWidth: 0.0000000001,
+              startFill: 'transparent',
+            },
+            end: {
+              endStrokeDashoffset: 0,
+              endStroke: 'transparent',
+              endStrokeWidth: 0.25,
+              endFill: 'white',
+            },
+            durations: {
+              strokeDashoffsetDuration: 2000,
+              strokeWidthDuration: 1800,
+              strokeDuration: 1800,
+              fillDuration: 2500,
+            },
+          };
+
+          const subtitleManuscript = new Manuscript(subtitleConfig);
+          subtitleManuscript.write('Full Stack Developer', {
+            textElementAttributes: {
+              x: '50%',
+              y: '50%',
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+            writeConfiguration: {
+              eachLetterDelay: 100,
+              delayOperation: 0,
+            },
+          });
+
+          const subtitleLetterCount = 'Full Stack Developer'.length;
+          const subtitleTotalMs = subtitleLetterCount * 100 + 2500;
+
+          setTimeout(() => {
+            setSubtitleHandwritingDone(true);
+          }, subtitleTotalMs);
+        }, titleTotalMs);
+      } catch (err) {
+        // Fallback: just show the text immediately if khoshnus fails
+        console.error('Khoshnus animation failed, falling back:', err);
+        setTitleHandwritingDone(true);
+        setSubtitleHandwritingDone(true);
+      }
+    };
+
+    runHandwriting();
   }, [textRevealed]);
 
   /* ------------  LAYOUT ------------ */
@@ -279,11 +380,26 @@ const AnimatedCard = () => {
     transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
-    opacity: 1,
+    opacity: titleHandwritingDone ? 1 : 0,
+    transition: 'opacity 0.8s ease-in-out',
     fontFamily: 'var(--font-instrument-serif), serif',
     fontStyle: 'italic',
     fontWeight: 400,
     letterSpacing: '0.02em'
+  };
+
+  // SVG overlay for khoshnus title handwriting animation
+  const titleSvgStyle: CSSProperties = {
+    ...floatingTextBase,
+    top: '-3%',
+    left: '33%',
+    transform: `translate(-50%, 0) translateZ(91px) translate(${titlePos.x}px, ${titlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
+    opacity: titleHandwritingDone ? 0 : (textRevealed ? 1 : 0),
+    transition: 'opacity 0.8s ease-in-out',
+    pointerEvents: 'none',
+    overflow: 'visible',
   };
 
   const subtitleContainerStyle: CSSProperties = {
@@ -294,10 +410,25 @@ const AnimatedCard = () => {
     transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
-    opacity: 1,
+    opacity: subtitleHandwritingDone ? 1 : 0,
+    transition: 'opacity 0.8s ease-in-out',
     fontFamily: 'var(--font-instrument-serif), serif',
     fontStyle: 'italic',
     fontWeight: 400
+  };
+
+  // SVG overlay for khoshnus subtitle handwriting animation
+  const subtitleSvgStyle: CSSProperties = {
+    ...floatingTextBase,
+    bottom: '10%',
+    left: '65%',
+    transform: `translate(-40%, -50%) translateZ(91px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
+    opacity: subtitleHandwritingDone ? 0 : (titleHandwritingDone || textRevealed ? 1 : 0),
+    transition: 'opacity 0.8s ease-in-out',
+    pointerEvents: 'none',
+    overflow: 'visible',
   };
 
   const backHeadingStyle: CSSProperties = {
@@ -506,8 +637,17 @@ const AnimatedCard = () => {
         animate(cardRef.current!, { rotateY: newRot, duration: 0, ease: 'linear' });
 
         // Animate front face elements
-        if (titleContainerRef.current) animate(titleContainerRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
-        if (subtitleContainerRef.current) animate(subtitleContainerRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
+        if (titleContainerRef.current) animate(titleContainerRef.current, { opacity: titleHandwritingDone ? frontOpacity : 0, duration: 300, ease: dampedOscillation as any });
+        if (subtitleContainerRef.current) animate(subtitleContainerRef.current, { opacity: subtitleHandwritingDone ? frontOpacity : 0, duration: 300, ease: dampedOscillation as any });
+        // Also fade SVG overlays with scroll
+        if (titleSvgRef.current?.parentElement) {
+          const svgParent = titleSvgRef.current.parentElement as HTMLElement;
+          svgParent.style.opacity = String(titleHandwritingDone ? 0 : frontOpacity);
+        }
+        if (subtitleSvgRef.current?.parentElement) {
+          const svgParent = subtitleSvgRef.current.parentElement as HTMLElement;
+          svgParent.style.opacity = String(subtitleHandwritingDone ? 0 : frontOpacity);
+        }
         if (greentextRef.current) animate(greentextRef.current, { opacity: frontOpacity, duration: 300, ease: dampedOscillation as any });
 
         // Animate back face elements
@@ -771,27 +911,29 @@ const AnimatedCard = () => {
         <div ref={cardRef} style={cardStyle}>
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
-          <div ref={titleContainerRef} style={titleContainerStyle}>
-            {'Sunny Jayaram'.split('').map((char, i) => (
-              <span
-                key={i}
-                ref={el => { titleLetterRefs.current[i] = el; }}
-                style={{ display: 'inline-block', opacity: 0, whiteSpace: char === ' ' ? 'pre' : undefined }}
-              >
-                {char}
-              </span>
-            ))}
+          <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
+          <div style={titleSvgStyle}>
+            <svg
+              ref={titleSvgRef}
+              id="khoshnus-title"
+              width="100%"
+              height="80"
+              viewBox="0 0 300 60"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ overflow: 'visible' }}
+            />
           </div>
-          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>
-            {'Full Stack Developer'.split('').map((char, i) => (
-              <span
-                key={i}
-                ref={el => { subtitleLetterRefs.current[i] = el; }}
-                style={{ display: 'inline-block', opacity: 0, whiteSpace: char === ' ' ? 'pre' : undefined }}
-              >
-                {char}
-              </span>
-            ))}
+          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
+          <div style={subtitleSvgStyle}>
+            <svg
+              ref={subtitleSvgRef}
+              id="khoshnus-subtitle"
+              width="100%"
+              height="50"
+              viewBox="0 0 300 40"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ overflow: 'visible' }}
+            />
           </div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'>be me'}<br />
