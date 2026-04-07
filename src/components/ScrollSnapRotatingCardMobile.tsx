@@ -165,7 +165,7 @@ const AnimatedCard = () => {
       animate(el, {
         rotateY: 360,
         translateX: 0,
-        translateY: [0],
+        translateY: [-400, 0],
         duration: 2000,
         ease: dampedOscillation as any,
         complete: () => {
