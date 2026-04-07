@@ -187,7 +187,7 @@ const AnimatedCard = () => {
           animate(titleEls, {
             opacity: [0, 1],
             translateY: [14, 0],
-            delay: (_el: HTMLSpanElement, i: number) => i * 90,
+            delay: (_el: any, i: number) => i * 90,
             duration: 400,
             easing: 'easeOutCubic',
           });
@@ -200,7 +200,7 @@ const AnimatedCard = () => {
           animate(subtitleEls, {
             opacity: [0, 1],
             translateY: [10, 0],
-            delay: (_el: HTMLSpanElement, i: number) => subtitleDelay + i * 70,
+            delay: (_el: any, i: number) => subtitleDelay + i * 70,
             duration: 350,
             easing: 'easeOutCubic',
           });
