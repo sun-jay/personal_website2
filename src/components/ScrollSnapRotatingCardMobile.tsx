@@ -41,9 +41,12 @@ const AnimatedCard = () => {
   // Add initialLoad state to control startup animation
   const [initialLoad, setInitialLoad] = useState(true);
 
-  // Clip-path text reveal states
-  const [titleRevealed, setTitleRevealed] = useState(false);
-  const [subtitleRevealed, setSubtitleRevealed] = useState(false);
+  // Khoshnus handwriting animation refs and state
+  const titleSvgRef = useRef<SVGSVGElement>(null);
+  const subtitleSvgRef = useRef<SVGSVGElement>(null);
+  const [textRevealed, setTextRevealed] = useState(false);
+  const [titleHandwritingDone, setTitleHandwritingDone] = useState(false);
+  const [subtitleHandwritingDone, setSubtitleHandwritingDone] = useState(false);
 
   /* ------------  CUSTOM DAMPED EASING  ------------ */
   const dampedOscillation = (t: number) => {
@@ -157,63 +160,134 @@ const AnimatedCard = () => {
           setTimeout(() => {
             setBackColor('#F5F2E7');
             setInitialLoad(false);
-            // Start title clip-path reveal after card settles
-            setTitleRevealed(true);
+            // Start khoshnus handwriting animation after card settles
+            setTextRevealed(true);
           }, 1000);
         }
       });
     }, 50);
   }, []);
 
-  /* ------------ CLIP-PATH TEXT REVEAL ------------ */
+  /* ------------ KHOSHNUS HANDWRITING ANIMATION ------------ */
   useEffect(() => {
-    if (!titleRevealed) return;
+    if (!textRevealed) return;
 
-    const titleEl = titleContainerRef.current;
-    if (titleEl) {
-      const titleProxy = { progress: 0 };
-      animate(titleProxy, {
-        progress: 100,
-        duration: 1500,
-        ease: 'easeOutCubic',
-        onUpdate: () => {
-          const p = titleProxy.progress;
-          titleEl.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
-          (titleEl.style as any).webkitClipPath = `inset(0 ${100 - p}% 0 0)`;
-        },
-        complete: () => {
-          titleEl.style.clipPath = 'none';
-          (titleEl.style as any).webkitClipPath = 'none';
+    const runHandwriting = async () => {
+      try {
+        // Ensure a <style> tag exists for khoshnus to inject keyframes into
+        if (!document.querySelector('style')) {
+          document.head.appendChild(document.createElement('style'));
+        }
+
+        // Load Google Fonts for the calligraphy animation
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Parisienne&display=swap';
+        document.head.appendChild(link);
+
+        const { Manuscript } = await import('khoshnus');
+
+        // --- Title handwriting ---
+        const titleManuscript = new Manuscript({
+          svgId: 'khoshnus-title',
+          font: 'Parisienne',
+          fontSize: '38px',
+          start: {
+            startStrokeDashoffset: 100,
+            startStroke: 'white',
+            startStrokeWidth: 0.0000000001,
+            startFill: 'transparent',
+          },
+          end: {
+            endStrokeDashoffset: 0,
+            endStroke: 'transparent',
+            endStrokeWidth: 0.3,
+            endFill: 'white',
+          },
+          durations: {
+            strokeDashoffsetDuration: 2500,
+            strokeWidthDuration: 2000,
+            strokeDuration: 2000,
+            fillDuration: 3000,
+          },
+        });
+
+        titleManuscript.write('Sunny Jayaram', {
+          textElementAttributes: {
+            x: '50%',
+            y: '50%',
+            textAnchor: 'middle',
+            dominantBaseline: 'middle',
+          },
+          writeConfiguration: {
+            eachLetterDelay: 120,
+            delayOperation: 0,
+          },
+        });
+
+        // Calculate when title animation finishes: last letter delay + fill duration
+        const titleLetterCount = 'Sunny Jayaram'.length;
+        const titleTotalMs = titleLetterCount * 120 + 3000;
+
+        // After title fills in, crossfade and start subtitle
+        setTimeout(() => {
+          setTitleHandwritingDone(true);
+
+          // --- Subtitle handwriting ---
+          const subtitleManuscript = new Manuscript({
+            svgId: 'khoshnus-subtitle',
+            font: 'Parisienne',
+            fontSize: '20px',
+            start: {
+              startStrokeDashoffset: 100,
+              startStroke: 'white',
+              startStrokeWidth: 0.0000000001,
+              startFill: 'transparent',
+            },
+            end: {
+              endStrokeDashoffset: 0,
+              endStroke: 'transparent',
+              endStrokeWidth: 0.25,
+              endFill: 'white',
+            },
+            durations: {
+              strokeDashoffsetDuration: 2000,
+              strokeWidthDuration: 1800,
+              strokeDuration: 1800,
+              fillDuration: 2500,
+            },
+          });
+
+          subtitleManuscript.write('Full Stack Developer', {
+            textElementAttributes: {
+              x: '50%',
+              y: '50%',
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+            writeConfiguration: {
+              eachLetterDelay: 100,
+              delayOperation: 0,
+            },
+          });
+
+          const subtitleLetterCount = 'Full Stack Developer'.length;
+          const subtitleTotalMs = subtitleLetterCount * 100 + 2500;
+
           setTimeout(() => {
-            setSubtitleRevealed(true);
-          }, 200);
-        }
-      } as any);
-    }
-  }, [titleRevealed]);
+            setSubtitleHandwritingDone(true);
+          }, subtitleTotalMs);
+        }, titleTotalMs);
+      } catch (err) {
+        // Fallback: just show the text immediately if khoshnus fails
+        console.error('Khoshnus animation failed, falling back:', err);
+        setTitleHandwritingDone(true);
+        setSubtitleHandwritingDone(true);
+      }
+    };
 
-  useEffect(() => {
-    if (!subtitleRevealed) return;
-
-    const subtitleEl = subtitleContainerRef.current;
-    if (subtitleEl) {
-      const subtitleProxy = { progress: 0 };
-      animate(subtitleProxy, {
-        progress: 100,
-        duration: 1000,
-        ease: 'easeOutCubic',
-        onUpdate: () => {
-          const p = subtitleProxy.progress;
-          subtitleEl.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
-          (subtitleEl.style as any).webkitClipPath = `inset(0 ${100 - p}% 0 0)`;
-        },
-        complete: () => {
-          subtitleEl.style.clipPath = 'none';
-          (subtitleEl.style as any).webkitClipPath = 'none';
-        }
-      } as any);
-    }
-  }, [subtitleRevealed]);
+    runHandwriting();
+  }, [textRevealed]);
 
   /* ------------  LAYOUT ------------ */
   const containerStyle: CSSProperties = {
@@ -281,13 +355,26 @@ const AnimatedCard = () => {
     transform: `translate(-50%, 0) translateZ(90px) translate(${titlePos.x}px, ${titlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
-    opacity: 1,
+    opacity: titleHandwritingDone ? 1 : 0,
+    transition: 'opacity 0.8s ease-in-out',
     fontFamily: 'var(--font-instrument-serif), serif',
     fontStyle: 'italic',
     fontWeight: 400,
     letterSpacing: '0.02em',
-    clipPath: titleRevealed ? undefined : 'inset(0 100% 0 0)',
-    WebkitClipPath: titleRevealed ? undefined : 'inset(0 100% 0 0)',
+  };
+
+  // SVG overlay for khoshnus title handwriting animation
+  const titleSvgStyle: CSSProperties = {
+    ...floatingTextBase,
+    top: '-3%',
+    left: '33%',
+    transform: `translate(-50%, 0) translateZ(91px) translate(${titlePos.x}px, ${titlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
+    opacity: titleHandwritingDone ? 0 : (textRevealed ? 1 : 0),
+    transition: 'opacity 0.8s ease-in-out',
+    pointerEvents: 'none',
+    overflow: 'visible',
   };
 
   const subtitleContainerStyle: CSSProperties = {
@@ -298,12 +385,25 @@ const AnimatedCard = () => {
     transform: `translate(-40%, -50%) translateZ(90px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
     width: '90%',
     textAlign: 'center',
-    opacity: 1,
+    opacity: subtitleHandwritingDone ? 1 : 0,
+    transition: 'opacity 0.8s ease-in-out',
     fontFamily: 'var(--font-instrument-serif), serif',
     fontStyle: 'italic',
     fontWeight: 400,
-    clipPath: subtitleRevealed ? undefined : 'inset(0 100% 0 0)',
-    WebkitClipPath: subtitleRevealed ? undefined : 'inset(0 100% 0 0)',
+  };
+
+  // SVG overlay for khoshnus subtitle handwriting animation
+  const subtitleSvgStyle: CSSProperties = {
+    ...floatingTextBase,
+    bottom: '10%',
+    left: '65%',
+    transform: `translate(-40%, -50%) translateZ(91px) translate(${subtitlePos.x}px, ${subtitlePos.y}px)`,
+    width: '90%',
+    textAlign: 'center',
+    opacity: subtitleHandwritingDone ? 0 : (titleHandwritingDone || textRevealed ? 1 : 0),
+    transition: 'opacity 0.8s ease-in-out',
+    pointerEvents: 'none',
+    overflow: 'visible',
   };
 
   const backHeadingStyle: CSSProperties = {
@@ -754,7 +854,29 @@ const AnimatedCard = () => {
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
           <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
+          <div style={titleSvgStyle}>
+            <svg
+              ref={titleSvgRef}
+              id="khoshnus-title"
+              width="100%"
+              height="80"
+              viewBox="0 0 300 60"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ overflow: 'visible' }}
+            />
+          </div>
           <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
+          <div style={subtitleSvgStyle}>
+            <svg
+              ref={subtitleSvgRef}
+              id="khoshnus-subtitle"
+              width="100%"
+              height="50"
+              viewBox="0 0 300 40"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ overflow: 'visible' }}
+            />
+          </div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'>be me'}<br />
             {'>go to community college'}<br />
