@@ -704,13 +704,9 @@ const AnimatedCard = () => {
 
   return (
     <div ref={scrollRef} style={containerStyle} className="vignette">
-      {/* Video Background */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <Background
-          src="/alt.mp4"
-          borderRadius="0"
-        />
-      </div>
+      {/* Video Background is now mounted at the page level (src/app/page.tsx)
+          so it starts loading + playing as soon as the page mounts, well
+          before the card animates in. */}
 
       <div style={transparentStyle}>
         <div style={sectionOverlayStyle} data-section="0" />

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import useMediaQuery from '@/hooks/useMediaQuery';
 import TribalStartupOverlay from '@/components/tribal/TribalStartupOverlay';
+import Background from '@/components/Background';
 
 // Use dynamic imports with no SSR to prevent hydration issues
 const ScrollSnapRotatingCardMobile = dynamic(
@@ -37,28 +38,21 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  // The hidden video element is rendered on EVERY render (including before
-  // `mounted` flips), so the browser starts fetching `/alt.mp4` from the
-  // very first paint — in parallel with the SVG startup animation rather
-  // than after it.
-  const bgPrefetch = (
-    <video
-      src="/alt.mp4"
-      preload="auto"
-      muted
-      playsInline
-      aria-hidden
-      tabIndex={-1}
+  // The Background video is rendered at the page level on every render
+  // (including before `mounted` flips), so it starts loading + playing as
+  // soon as the page mounts. The startup overlay covers it during the SVG
+  // animation; the moment the overlay splits open the video is already there.
+  const bgLayer = (
+    <div
       style={{
         position: 'fixed',
-        width: 1,
-        height: 1,
-        opacity: 0,
+        inset: 0,
+        zIndex: 0,
         pointerEvents: 'none',
-        top: -9999,
-        left: -9999,
       }}
-    />
+    >
+      <Background src="/alt.mp4" borderRadius="0" />
+    </div>
   );
 
   // Show nothing during initial mount to prevent flash of wrong component
@@ -71,14 +65,14 @@ export default function Home() {
         alignItems: 'center',
         backgroundColor: 'rgb(245, 242, 231)',
       }}>
-        {bgPrefetch}
+        {bgLayer}
       </div>
     );
   }
 
   return (
     <div>
-      {bgPrefetch}
+      {bgLayer}
       {showOverlay && (
         <TribalStartupOverlay onSplitStart={() => setShowCard(true)} />
       )}
