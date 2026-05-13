@@ -31,6 +31,13 @@ interface TribalStrokeDrawProps {
   splitDurationMs?: number;
   /** How far each half slides outward in viewBox units (default 220). */
   splitDistance?: number;
+  /**
+   * Per-path stagger applied during the split: each body path starts sliding
+   * `i * splitStaggerMs` after the base `splitAfterMs`. Defaults to 0 (all paths
+   * split simultaneously). With a positive value, the outermost / earliest-drawn
+   * paths leave first and the innermost (the main body) leaves last.
+   */
+  splitStaggerMs?: number;
   /** Fired after the split slide finishes — overlay can use this to unmount. */
   onSplitComplete?: () => void;
 }
@@ -57,6 +64,7 @@ export default function TribalStrokeDraw({
   splitAfterMs,
   splitDurationMs = 800,
   splitDistance = 220,
+  splitStaggerMs = 0,
   onSplitComplete,
 }: TribalStrokeDrawProps) {
   // Scale every internal duration through this multiplier.
@@ -69,13 +77,25 @@ export default function TribalStrokeDraw({
   const wrapperKey = `stroke-${playKey ?? 0}`;
   const splitEnabled = typeof splitAfterMs === 'number';
 
-  // Fire onSplitComplete after the split slide finishes (only when enabled).
+  // Stagger indices for the central elements (dot + diamond) so they hang
+  // alongside the right body paths conceptually.
+  const DOT_SPLIT_INDEX = 1;       // dot leaves with the top wings
+  const DIAMOND_SPLIT_INDEX = 4;   // diamond leaves with the head outline
+
+  // The per-path split delays — `splitAfterMs` plus a per-path stagger.
+  const baseSplitDelay = splitAfterMs ?? 0;
+  const pathSplitDelay = (i: number) => baseSplitDelay + i * splitStaggerMs;
+  const dotSplitDelay = baseSplitDelay + DOT_SPLIT_INDEX * splitStaggerMs;
+  const diamondSplitDelay = baseSplitDelay + DIAMOND_SPLIT_INDEX * splitStaggerMs;
+  const lastSplitDelay = pathSplitDelay(BODY_PATHS.length - 1);
+
+  // Fire onSplitComplete after the LAST staggered slide finishes.
   useEffect(() => {
     if (!splitEnabled || !onSplitComplete) return;
-    const id = window.setTimeout(onSplitComplete, (splitAfterMs ?? 0) + splitDurationMs);
+    const id = window.setTimeout(onSplitComplete, lastSplitDelay + splitDurationMs);
     return () => window.clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playKey, splitAfterMs, splitDurationMs, splitEnabled]);
+  }, [playKey, splitAfterMs, splitDurationMs, splitEnabled, splitStaggerMs]);
 
   const DEFAULT_STROKE_EASE = 'cubic-bezier(.55,.1,.25,1)';
   // Ease-in for the ribs path — starts slow, accelerates toward the end.
@@ -252,9 +272,9 @@ export default function TribalStrokeDraw({
         setParticles((prev) => prev.filter((p) => now - p.born < p.ttl));
       }
 
-      // Keep rAF alive past the flicker — through the split (if enabled) plus a
-      // bit of buffer so the last particles can drift off and fade.
-      const splitEndMs = splitEnabled ? (splitAfterMs ?? 0) + splitDurationMs : 0;
+      // Keep rAF alive past the flicker — through the *last* staggered split
+      // wrapper (if enabled) plus a buffer so trailing particles drift off and fade.
+      const splitEndMs = splitEnabled ? lastSplitDelay + splitDurationMs : 0;
       const lastEnd = Math.max(
         bodyDelay(BODY_PATHS.length - 1) + perPathMs * 2 + T_FLICKER,
         splitEndMs,
@@ -419,236 +439,275 @@ export default function TribalStrokeDraw({
             <rect x="0" y="0" width="0.5" height="1" />
           </clipPath>
         </defs>
-        <g
-          style={
-            splitEnabled
-              ? ({
-                  animation: `tribal-split-right ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${splitAfterMs}ms forwards`,
-                  ['--split-dist' as string]: `${splitDistance}px`,
-                } as React.CSSProperties)
-              : undefined
-          }
-        >
-          <g transform={RIGHT_BODY_TRANSFORM}>
-            {BODY_PATHS.map((d, i) =>
-              // Skip the half-traced top droplet (i === 0); replaced below by a clean viewBox circle.
-              i === 0
-                ? null
-                : strokePath(
-                    d,
-                    bodyDelay(i),
-                    `r-${i}`,
-                    false,
-                    i === BODY_PATHS.length - 1 ? 'linear' : DEFAULT_STROKE_EASE,
-                    i === BODY_PATHS.length - 1 ? perPathMs * 2 : perPathMs,
-                  )
-            )}
+        {/* Right side — each body path gets its own sliding wrapper so they can
+            stagger out from outermost (top wings) to innermost (main body). */}
+        {BODY_PATHS.map((d, i) => {
+          // Skip the half-traced top droplet (i === 0); replaced below by clean ball.
+          if (i === 0) return null;
+          const splitDelay = pathSplitDelay(i);
+          return (
+            <g
+              key={`r-slide-${i}`}
+              style={
+                splitEnabled
+                  ? ({
+                      animation: `tribal-split-right ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${splitDelay}ms forwards`,
+                      ['--split-dist' as string]: `${splitDistance}px`,
+                    } as React.CSSProperties)
+                  : undefined
+              }
+            >
+              <g transform={RIGHT_BODY_TRANSFORM}>
+                {strokePath(
+                  d,
+                  bodyDelay(i),
+                  `r-${i}`,
+                  false,
+                  i === BODY_PATHS.length - 1 ? 'linear' : DEFAULT_STROKE_EASE,
+                  i === BODY_PATHS.length - 1 ? perPathMs * 2 : perPathMs,
+                )}
+              </g>
+            </g>
+          );
+        })}
+        {/* Right half of the diamond — slides at DIAMOND_SPLIT_INDEX timing. */}
+        {splitEnabled && (
+          <g
+            style={{
+              animation: `tribal-split-right ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${diamondSplitDelay}ms forwards`,
+              ['--split-dist' as string]: `${splitDistance}px`,
+            } as React.CSSProperties}
+          >
+            <g
+              clipPath={`url(#${idBase}-half-right)`}
+              style={{
+                opacity: 0,
+                filter:
+                  'drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 18px #29B6F6) drop-shadow(0 0 32px rgba(2,136,209,0.7))',
+                animation: `tribal-half-reveal ${splitDurationMs}ms linear ${diamondSplitDelay}ms forwards`,
+              }}
+            >
+              <g transform={DIAMOND_GROUP_TRANSFORM}>
+                <path d={CENTER_DIAMOND_FILL_PATH} fill="#4FC3F7" fillRule="evenodd" />
+              </g>
+            </g>
           </g>
-          {/* Right half of the diamond — sits inside the right-sliding wrapper so it
-              slides off with the body half. Hidden by the centered diamond on top
-              during the draw + flicker, then revealed the instant the split begins. */}
-          {splitEnabled && (
-            <>
-              <g
-                clipPath={`url(#${idBase}-half-right)`}
-                style={{
-                  opacity: 0,
-                  filter:
-                    'drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 18px #29B6F6) drop-shadow(0 0 32px rgba(2,136,209,0.7))',
-                  animation: `tribal-half-reveal ${splitDurationMs}ms linear ${splitAfterMs}ms forwards`,
-                }}
-              >
-                <g transform={DIAMOND_GROUP_TRANSFORM}>
-                  <path d={CENTER_DIAMOND_FILL_PATH} fill="#4FC3F7" fillRule="evenodd" />
-                </g>
-              </g>
-              {/* Right half of the top dot — also slides off with the body. */}
-              <g
-                clipPath={`url(#${idBase}-half-right)`}
-                style={{
-                  opacity: 0,
-                  animation: `tribal-half-reveal ${splitDurationMs}ms linear ${splitAfterMs}ms forwards`,
-                }}
-              >
-                <path d={TOP_BALL_VB} fill="#ffffff" />
-              </g>
-            </>
-          )}
-        </g>
-        <g
-          style={
-            splitEnabled
-              ? ({
-                  animation: `tribal-split-left ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${splitAfterMs}ms forwards`,
-                  ['--split-dist' as string]: `${splitDistance}px`,
-                } as React.CSSProperties)
-              : undefined
-          }
-        >
-          <g transform={LEFT_BODY_TRANSFORM}>
-            {BODY_PATHS.map((d, i) =>
-              i === 0
-                ? null
-                : strokePath(
-                    d,
-                    bodyDelay(i),
-                    `l-${i}`,
-                    false,
-                    i === BODY_PATHS.length - 1 ? 'linear' : DEFAULT_STROKE_EASE,
-                    i === BODY_PATHS.length - 1 ? perPathMs * 2 : perPathMs,
-                  )
-            )}
+        )}
+        {/* Right half of the top dot — slides at DOT_SPLIT_INDEX timing. */}
+        {splitEnabled && (
+          <g
+            style={{
+              animation: `tribal-split-right ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${dotSplitDelay}ms forwards`,
+              ['--split-dist' as string]: `${splitDistance}px`,
+            } as React.CSSProperties}
+          >
+            <g
+              clipPath={`url(#${idBase}-half-right)`}
+              style={{
+                opacity: 0,
+                animation: `tribal-half-reveal ${splitDurationMs}ms linear ${dotSplitDelay}ms forwards`,
+              }}
+            >
+              <path d={TOP_BALL_VB} fill="#ffffff" />
+            </g>
           </g>
-          {/* Left half of the diamond + dot — see right half comments above. */}
-          {splitEnabled && (
-            <>
-              <g
-                clipPath={`url(#${idBase}-half-left)`}
-                style={{
-                  opacity: 0,
-                  filter:
-                    'drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 18px #29B6F6) drop-shadow(0 0 32px rgba(2,136,209,0.7))',
-                  animation: `tribal-half-reveal ${splitDurationMs}ms linear ${splitAfterMs}ms forwards`,
-                }}
-              >
-                <g transform={DIAMOND_GROUP_TRANSFORM}>
-                  <path d={CENTER_DIAMOND_FILL_PATH} fill="#4FC3F7" fillRule="evenodd" />
-                </g>
+        )}
+        {/* Left side — mirror of the right side, also staggered. */}
+        {BODY_PATHS.map((d, i) => {
+          if (i === 0) return null;
+          const splitDelay = pathSplitDelay(i);
+          return (
+            <g
+              key={`l-slide-${i}`}
+              style={
+                splitEnabled
+                  ? ({
+                      animation: `tribal-split-left ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${splitDelay}ms forwards`,
+                      ['--split-dist' as string]: `${splitDistance}px`,
+                    } as React.CSSProperties)
+                  : undefined
+              }
+            >
+              <g transform={LEFT_BODY_TRANSFORM}>
+                {strokePath(
+                  d,
+                  bodyDelay(i),
+                  `l-${i}`,
+                  false,
+                  i === BODY_PATHS.length - 1 ? 'linear' : DEFAULT_STROKE_EASE,
+                  i === BODY_PATHS.length - 1 ? perPathMs * 2 : perPathMs,
+                )}
               </g>
-              <g
-                clipPath={`url(#${idBase}-half-left)`}
-                style={{
-                  opacity: 0,
-                  animation: `tribal-half-reveal ${splitDurationMs}ms linear ${splitAfterMs}ms forwards`,
-                }}
-              >
-                <path d={TOP_BALL_VB} fill="#ffffff" />
+            </g>
+          );
+        })}
+        {/* Left half of the diamond — staggered at DIAMOND_SPLIT_INDEX. */}
+        {splitEnabled && (
+          <g
+            style={{
+              animation: `tribal-split-left ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${diamondSplitDelay}ms forwards`,
+              ['--split-dist' as string]: `${splitDistance}px`,
+            } as React.CSSProperties}
+          >
+            <g
+              clipPath={`url(#${idBase}-half-left)`}
+              style={{
+                opacity: 0,
+                filter:
+                  'drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 18px #29B6F6) drop-shadow(0 0 32px rgba(2,136,209,0.7))',
+                animation: `tribal-half-reveal ${splitDurationMs}ms linear ${diamondSplitDelay}ms forwards`,
+              }}
+            >
+              <g transform={DIAMOND_GROUP_TRANSFORM}>
+                <path d={CENTER_DIAMOND_FILL_PATH} fill="#4FC3F7" fillRule="evenodd" />
               </g>
-            </>
-          )}
-        </g>
+            </g>
+          </g>
+        )}
+        {/* Left half of the top dot — staggered at DOT_SPLIT_INDEX. */}
+        {splitEnabled && (
+          <g
+            style={{
+              animation: `tribal-split-left ${splitDurationMs}ms cubic-bezier(.4,.05,.4,1) ${dotSplitDelay}ms forwards`,
+              ['--split-dist' as string]: `${splitDistance}px`,
+            } as React.CSSProperties}
+          >
+            <g
+              clipPath={`url(#${idBase}-half-left)`}
+              style={{
+                opacity: 0,
+                animation: `tribal-half-reveal ${splitDurationMs}ms linear ${dotSplitDelay}ms forwards`,
+              }}
+            >
+              <path d={TOP_BALL_VB} fill="#ffffff" />
+            </g>
+          </g>
+        )}
         {/* Clean top-ball + center-diamond, rendered directly in viewBox space.
-            Diamond's flicker fill is delayed until AFTER the ribs (last blob) fill completes.
-            Wrapped in a fade group so they vanish during the split. */}
-        <g
-          style={
-            splitEnabled
-              ? ({
-                  animation: `tribal-split-fade ${splitDurationMs}ms ease-in ${splitAfterMs}ms forwards`,
-                } as React.CSSProperties)
-              : undefined
-          }
-        >
+            Each is wrapped in its own snap-off fade group so it disappears at
+            the moment its corresponding sliding-half wrapper becomes visible. */}
         {(() => {
           const lastIdx = BODY_PATHS.length - 1;
           const lastBlobDur = perPathMs * 2;
-          // Diamond kicks in the instant the ribs finish drawing — no delay.
           const diamondOutlineDelay = bodyDelay(lastIdx) + lastBlobDur;
           const diamondOutlineDur = T_DIAMOND_OUTLINE;
-          // Small pause after the outline finishes before the flicker kicks in.
           const flickerDelay = diamondOutlineDelay + diamondOutlineDur + T_FLICKER_GAP;
-
-          // Top-ball timing — matches what BODY_PATHS[0] would have had.
           const ballDelay = bodyDelay(0);
 
           return (
             <>
-              {/* Top ball: outline then fill (smooth, matches the body paths) */}
-              <path
-                d={TOP_BALL_VB}
-                pathLength={1}
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth={0.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{
-                  strokeDasharray: 1,
-                  strokeDashoffset: 1,
-                  opacity: 0.7,
-                  animation: `tribal-underlay ${perPathMs}ms ${DEFAULT_STROKE_EASE} ${ballDelay + 60}ms forwards`,
-                }}
-              />
-              <path
-                d={TOP_BALL_VB}
-                pathLength={1}
-                fill="none"
-                stroke="#80DEEA"
-                strokeWidth={0.9}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{
-                  strokeDasharray: 1,
-                  strokeDashoffset: 1,
-                  opacity: 0,
-                  animation: `tribal-tracer ${perPathMs}ms ${DEFAULT_STROKE_EASE} ${ballDelay}ms forwards`,
-                }}
-              />
-              <path
-                d={TOP_BALL_VB}
-                fill="#ffffff"
-                style={{
-                  fillOpacity: 0,
-                  animation: `tribal-fill 450ms ease-out ${ballDelay + perPathMs * 0.72}ms forwards`,
-                }}
-              />
-
-              {/* Center diamond — one single <path> containing both halves
-                  (left trace + mirrored right) as subpaths, filled together.
-                  Outline strokes in after the ribs fill, then flicker turns on the fill. */}
+              {/* Top ball — snaps off at dotSplitDelay. */}
               <g
-                transform={DIAMOND_GROUP_TRANSFORM}
-                style={{
-                  filter:
-                    'drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 18px #29B6F6) drop-shadow(0 0 32px rgba(2,136,209,0.7))',
-                  // The glow itself flashes in sync with the fill-opacity flicker.
-                  animation: `tribal-diamond-pulse ${T_FLICKER}ms steps(80, end) ${flickerDelay}ms forwards`,
-                }}
+                style={
+                  splitEnabled
+                    ? ({
+                        animation: `tribal-split-fade ${splitDurationMs}ms ease-in ${dotSplitDelay}ms forwards`,
+                      } as React.CSSProperties)
+                    : undefined
+                }
               >
                 <path
-                  d={CENTER_DIAMOND_PATH}
+                  d={TOP_BALL_VB}
                   pathLength={1}
                   fill="none"
-                  stroke="#B3E5FC"
-                  strokeWidth={5}
+                  stroke="#ffffff"
+                  strokeWidth={0.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   style={{
                     strokeDasharray: 1,
                     strokeDashoffset: 1,
                     opacity: 0.7,
-                    animation: `tribal-underlay ${diamondOutlineDur}ms linear ${diamondOutlineDelay + 60}ms forwards`,
+                    animation: `tribal-underlay ${perPathMs}ms ${DEFAULT_STROKE_EASE} ${ballDelay + 60}ms forwards`,
                   }}
                 />
                 <path
-                  d={CENTER_DIAMOND_PATH}
+                  d={TOP_BALL_VB}
                   pathLength={1}
                   fill="none"
-                  stroke="#E1F5FE"
-                  strokeWidth={9}
+                  stroke="#80DEEA"
+                  strokeWidth={0.9}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   style={{
                     strokeDasharray: 1,
                     strokeDashoffset: 1,
                     opacity: 0,
-                    animation: `tribal-tracer ${diamondOutlineDur}ms linear ${diamondOutlineDelay}ms forwards`,
+                    animation: `tribal-tracer ${perPathMs}ms ${DEFAULT_STROKE_EASE} ${ballDelay}ms forwards`,
                   }}
                 />
                 <path
-                  d={CENTER_DIAMOND_FILL_PATH}
-                  fill="#4FC3F7"
-                  fillRule="evenodd"
+                  d={TOP_BALL_VB}
+                  fill="#ffffff"
                   style={{
                     fillOpacity: 0,
-                    animation: `tribal-diamond-flicker ${T_FLICKER}ms steps(80, end) ${flickerDelay}ms forwards`,
+                    animation: `tribal-fill 450ms ease-out ${ballDelay + perPathMs * 0.72}ms forwards`,
                   }}
                 />
+              </g>
+
+              {/* Center diamond — snaps off at diamondSplitDelay. */}
+              <g
+                style={
+                  splitEnabled
+                    ? ({
+                        animation: `tribal-split-fade ${splitDurationMs}ms ease-in ${diamondSplitDelay}ms forwards`,
+                      } as React.CSSProperties)
+                    : undefined
+                }
+              >
+                <g
+                  transform={DIAMOND_GROUP_TRANSFORM}
+                  style={{
+                    filter:
+                      'drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 18px #29B6F6) drop-shadow(0 0 32px rgba(2,136,209,0.7))',
+                    animation: `tribal-diamond-pulse ${T_FLICKER}ms steps(80, end) ${flickerDelay}ms forwards`,
+                  }}
+                >
+                  <path
+                    d={CENTER_DIAMOND_PATH}
+                    pathLength={1}
+                    fill="none"
+                    stroke="#B3E5FC"
+                    strokeWidth={5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      strokeDasharray: 1,
+                      strokeDashoffset: 1,
+                      opacity: 0.7,
+                      animation: `tribal-underlay ${diamondOutlineDur}ms linear ${diamondOutlineDelay + 60}ms forwards`,
+                    }}
+                  />
+                  <path
+                    d={CENTER_DIAMOND_PATH}
+                    pathLength={1}
+                    fill="none"
+                    stroke="#E1F5FE"
+                    strokeWidth={9}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      strokeDasharray: 1,
+                      strokeDashoffset: 1,
+                      opacity: 0,
+                      animation: `tribal-tracer ${diamondOutlineDur}ms linear ${diamondOutlineDelay}ms forwards`,
+                    }}
+                  />
+                  <path
+                    d={CENTER_DIAMOND_FILL_PATH}
+                    fill="#4FC3F7"
+                    fillRule="evenodd"
+                    style={{
+                      fillOpacity: 0,
+                      animation: `tribal-diamond-flicker ${T_FLICKER}ms steps(80, end) ${flickerDelay}ms forwards`,
+                    }}
+                  />
+                </g>
               </g>
             </>
           );
         })()}
-        </g>
 
         {/* Wispy particles trailing off the ribs as they draw — ~25% more pronounced than baseline. */}
         {particles.map((p) => {
