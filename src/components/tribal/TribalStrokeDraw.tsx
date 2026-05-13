@@ -197,8 +197,9 @@ export default function TribalStrokeDraw({
     const tick = (now: number) => {
       const elapsed = now - start;
 
-      // Particles only fly off the ribs path (last body path) as it draws.
-      // ~25% denser than baseline.
+      // Particles fly off the ribs path. While the ribs are drawing, spawn at
+      // the leading edge. After the draw completes, keep spawning from random
+      // points along the path so the trail continues into the split.
       if (now - lastSpawn >= 30) {
         lastSpawn = now;
         const fresh: Particle[] = [];
@@ -206,12 +207,14 @@ export default function TribalStrokeDraw({
         const delay = bodyDelay(i);
         const dur = perPathMs * 2;
         const localT = (elapsed - delay) / dur;
-        if (localT > 0 && localT < 1) {
+        if (localT > 0) {
           const el = document.getElementById(`${idBase}-b-${i}`) as SVGPathElement | null;
           if (el) {
             try {
               const len = el.getTotalLength();
-              const t = localT * len;
+              // Leading edge during draw; random along path after.
+              const sampleT = localT < 1 ? localT : Math.random();
+              const t = sampleT * len;
               const pt = el.getPointAtLength(t);
               const dt = Math.min(len, t + 1);
               const ptn = el.getPointAtLength(dt);
@@ -249,7 +252,13 @@ export default function TribalStrokeDraw({
         setParticles((prev) => prev.filter((p) => now - p.born < p.ttl));
       }
 
-      const lastEnd = bodyDelay(BODY_PATHS.length - 1) + perPathMs * 2 + T_FLICKER;
+      // Keep rAF alive past the flicker — through the split (if enabled) plus a
+      // bit of buffer so the last particles can drift off and fade.
+      const splitEndMs = splitEnabled ? (splitAfterMs ?? 0) + splitDurationMs : 0;
+      const lastEnd = Math.max(
+        bodyDelay(BODY_PATHS.length - 1) + perPathMs * 2 + T_FLICKER,
+        splitEndMs,
+      ) + 2000;
       if (elapsed < lastEnd) {
         raf = requestAnimationFrame(tick);
       }
