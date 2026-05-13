@@ -5,6 +5,12 @@ import type { CSSProperties } from 'react';
 import { animate } from 'animejs';
 import { SocialIcon } from 'react-social-icons';
 import Background from './Background';
+import KhoshnusTitle from './KhoshnusTitle';
+
+// Flip to true to bring back the title/subtitle handwriting intro.
+// Off by default because the tribal startup overlay already handles
+// the entrance reveal.
+const TITLE_INTRO_ENABLED = false;
 
 const ScrollSnapRotatingCardDesktop = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -817,8 +823,23 @@ const ScrollSnapRotatingCardDesktop = () => {
         <div ref={cardRef} style={cardStyle}>
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
-          <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
-          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
+          <div ref={titleContainerRef} style={titleContainerStyle}>
+            <KhoshnusTitle
+              text="Sunny Jayaram"
+              svgId="khoshnus-title-desktop"
+              disableIntro={!TITLE_INTRO_ENABLED}
+            />
+          </div>
+          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>
+            <KhoshnusTitle
+              text="Full Stack Developer"
+              svgId="khoshnus-subtitle-desktop"
+              viewBoxHeight={32}
+              fontSize="25px"
+              delayOperation={1500}
+              disableIntro={!TITLE_INTRO_ENABLED}
+            />
+          </div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'>be me'}<br />
             {'>go to community college'}<br />

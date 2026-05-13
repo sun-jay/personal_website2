@@ -5,6 +5,11 @@ import type { CSSProperties } from 'react';
 import { animate } from 'animejs';
 import { SocialIcon } from 'react-social-icons';
 import Background from './Background';
+import KhoshnusTitle from './KhoshnusTitle';
+
+// Flip to true to bring back the title/subtitle handwriting intro.
+// Off by default because the tribal startup overlay already handles the reveal.
+const TITLE_INTRO_ENABLED = false;
 
 const AnimatedCard = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -180,32 +185,6 @@ const AnimatedCard = () => {
         }
       });
 
-      // Start letter stagger while card is still dropping
-      setTimeout(() => {
-        const titleEls = titleLetterRefs.current.filter(Boolean) as HTMLSpanElement[];
-        if (titleEls.length) {
-          animate(titleEls, {
-            opacity: [0, 1],
-            translateY: [14, 0],
-            delay: (_el: any, i: number) => i * 90,
-            duration: 400,
-            easing: 'easeOutCubic',
-          });
-        }
-
-        // Subtitle starts after title letters finish
-        const subtitleDelay = titleEls.length * 90 + 200;
-        const subtitleEls = subtitleLetterRefs.current.filter(Boolean) as HTMLSpanElement[];
-        if (subtitleEls.length) {
-          animate(subtitleEls, {
-            opacity: [0, 1],
-            translateY: [10, 0],
-            delay: (_el: any, i: number) => subtitleDelay + i * 70,
-            duration: 350,
-            easing: 'easeOutCubic',
-          });
-        }
-      }, 450);
     }, 50);
   }, []);
 
@@ -768,22 +747,22 @@ const AnimatedCard = () => {
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
           <div ref={titleContainerRef} style={titleContainerStyle}>
-            {'Sunny Jayaram'.split('').map((char, i) => (
-              <span
-                key={i}
-                ref={el => { titleLetterRefs.current[i] = el; }}
-                style={{ display: 'inline-block', opacity: 0, whiteSpace: char === ' ' ? 'pre' : undefined }}
-              >{char}</span>
-            ))}
+            <KhoshnusTitle
+              text="Sunny Jayaram"
+              svgId="khoshnus-title-mobile"
+              fontSize="100px"
+              disableIntro={!TITLE_INTRO_ENABLED}
+            />
           </div>
           <div ref={subtitleContainerRef} style={subtitleContainerStyle}>
-            {'Full Stack Developer'.split('').map((char, i) => (
-              <span
-                key={i}
-                ref={el => { subtitleLetterRefs.current[i] = el; }}
-                style={{ display: 'inline-block', opacity: 0, whiteSpace: char === ' ' ? 'pre' : undefined }}
-              >{char}</span>
-            ))}
+            <KhoshnusTitle
+              text="Full Stack Developer"
+              svgId="khoshnus-subtitle-mobile"
+              viewBoxHeight={65}
+              fontSize="54px"
+              delayOperation={1500}
+              disableIntro={!TITLE_INTRO_ENABLED}
+            />
           </div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'>be me'}<br />
