@@ -28,13 +28,9 @@ const POST_FLICKER_GAP = 100;
 // Offset to pass into TribalStrokeDraw — when its inner split begins.
 const SPLIT_AFTER = TRIBAL_ANIMATION_MS + POST_FLICKER_GAP;
 const SPLIT_DUR = 900;
-// Per-path stagger applied to the split — outermost paths leave first.
-const SPLIT_STAGGER_MS = 70;
-// BODY_PATHS has 10 entries (0..9); the last to slide is index 9.
-const FULL_STAGGER_SPAN = 9 * SPLIT_STAGGER_MS;
 
 const SVG_SPLIT_START_AT = TRIBAL_START + SPLIT_AFTER;
-const TOTAL_DURATION = SVG_SPLIT_START_AT + FULL_STAGGER_SPAN + SPLIT_DUR;
+const TOTAL_DURATION = SVG_SPLIT_START_AT + SPLIT_DUR;
 
 type Stage = 0 | 1 | 2 | 3 | 4;
 //   0 = solid white
@@ -113,7 +109,6 @@ export default function TribalStartupOverlay({
             speedScale={SVG_SPEED}
             splitAfterMs={SPLIT_AFTER}
             splitDurationMs={SPLIT_DUR}
-            splitStaggerMs={SPLIT_STAGGER_MS}
             splitDistance={400}
           />
         </div>
