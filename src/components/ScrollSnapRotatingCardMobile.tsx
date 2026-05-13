@@ -746,24 +746,8 @@ const AnimatedCard = () => {
         <div ref={cardRef} style={cardStyle}>
           {/* Front Face (0 degrees) */}
           <div style={frontFaceStyle} />
-          <div ref={titleContainerRef} style={titleContainerStyle}>
-            <KhoshnusTitle
-              text="Sunny Jayaram"
-              svgId="khoshnus-title-mobile"
-              fontSize="100px"
-              disableIntro={!TITLE_INTRO_ENABLED}
-            />
-          </div>
-          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>
-            <KhoshnusTitle
-              text="Full Stack Developer"
-              svgId="khoshnus-subtitle-mobile"
-              viewBoxHeight={65}
-              fontSize="54px"
-              delayOperation={1500}
-              disableIntro={!TITLE_INTRO_ENABLED}
-            />
-          </div>
+          <div ref={titleContainerRef} style={titleContainerStyle}>Sunny Jayaram</div>
+          <div ref={subtitleContainerRef} style={subtitleContainerStyle}>Full Stack Developer</div>
           <div ref={greentextRef} style={greentextBlockStyle}>
             {'>be me'}<br />
             {'>go to community college'}<br />
