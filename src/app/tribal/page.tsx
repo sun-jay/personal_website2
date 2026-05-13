@@ -6,6 +6,7 @@ import TribalStrokeDraw from '@/components/tribal/TribalStrokeDraw';
 import TribalSparkleRain from '@/components/tribal/TribalSparkleRain';
 import TribalCascadeGlitch from '@/components/tribal/TribalCascadeGlitch';
 import TribalSparkleStroke from '@/components/tribal/TribalSparkleStroke';
+import TribalGlyph2 from '@/components/tribal/TribalGlyph2';
 
 type Variant = {
   id: string;
@@ -15,6 +16,13 @@ type Variant = {
 };
 
 const VARIANTS: Variant[] = [
+  {
+    id: 'glyph2',
+    title: 'Glyph II',
+    blurb:
+      'New, denser traced glyph (42 paths). Builds inward — flourishes first, body last — then the eye flickers on.',
+    render: (k) => <TribalGlyph2 playKey={k} />,
+  },
   {
     id: 'sparkle-stroke',
     title: 'Sparkle Stroke',
