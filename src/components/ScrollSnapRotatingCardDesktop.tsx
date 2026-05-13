@@ -5,6 +5,12 @@ import type { CSSProperties } from 'react';
 import { animate } from 'animejs';
 import { SocialIcon } from 'react-social-icons';
 import Background from './Background';
+import KhoshnusTitle from './KhoshnusTitle';
+
+// Flip to true to bring back the title/subtitle handwriting intro.
+// Off by default because the tribal startup overlay already handles
+// the entrance reveal.
+const TITLE_INTRO_ENABLED = false;
 
 const ScrollSnapRotatingCardDesktop = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
