@@ -25,30 +25,42 @@ const VideoWithPlaceholder = ({
 }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [videoLoaded, setVideoLoaded] = useState(false);
+    // If the bytes are already cached (from the homepage's <video preload="auto">
+    // pre-fetch), `loadeddata`/`canplay` fires almost instantly — in that case
+    // we skip the fade-in so the video appears seamlessly with the rest of the
+    // page. On slower connections, fall back to the normal fade-in.
+    const [skipFade, setSkipFade] = useState(false);
 
     useEffect(() => {
         const video = videoRef.current;
 
         if (video) {
-            const handleLoadedData = () => {
+            const startTime = performance.now();
+            let settled = false;
+
+            const markLoaded = () => {
+                if (settled) return;
+                settled = true;
+                const elapsed = performance.now() - startTime;
+                // <250ms from mount → effectively cached / ready; no fade.
+                if (elapsed < 250) setSkipFade(true);
                 setVideoLoaded(true);
             };
 
-            const handleCanPlay = () => {
-                setVideoLoaded(true);
-            };
-
-            video.addEventListener("loadeddata", handleLoadedData);
-            video.addEventListener("canplay", handleCanPlay);
+            video.addEventListener("loadeddata", markLoaded);
+            video.addEventListener("canplay", markLoaded);
             video.load();
 
+            // If the cached bytes are already decoded by the time we get here,
+            // skip straight to the loaded state with no fade.
             if (video.readyState >= 2) {
-                setVideoLoaded(true);
+                setSkipFade(true);
+                markLoaded();
             }
 
             return () => {
-                video.removeEventListener("loadeddata", handleLoadedData);
-                video.removeEventListener("canplay", handleCanPlay);
+                video.removeEventListener("loadeddata", markLoaded);
+                video.removeEventListener("canplay", markLoaded);
             };
         }
     }, [src]);
@@ -89,10 +101,10 @@ const VideoWithPlaceholder = ({
                 style={{
                     ...style,
                     opacity: videoLoaded ? 1 : 0,
-                    transition: 'opacity 0.8s ease-in-out',
+                    transition: skipFade ? 'none' : 'opacity 0.8s ease-in-out',
                 }}
             />
-            {/* Vignette overlay - fades in with video */}
+            {/* Vignette overlay - fades in with video (or appears instantly if cached) */}
             <div
                 style={{
                     position: 'fixed',
@@ -101,7 +113,7 @@ const VideoWithPlaceholder = ({
                     background: 'radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.3) 85%, rgba(0, 0, 0, 0.6) 100%)',
                     zIndex: 1,
                     opacity: videoLoaded ? 1 : 0,
-                    transition: 'opacity 1.2s ease-in-out 0.3s',
+                    transition: skipFade ? 'none' : 'opacity 1.2s ease-in-out 0.3s',
                 }}
             />
         </>
