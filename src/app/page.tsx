@@ -37,6 +37,30 @@ export default function Home() {
     setMounted(true);
   }, []);
 
+  // The hidden video element is rendered on EVERY render (including before
+  // `mounted` flips), so the browser starts fetching `/alt.mp4` from the
+  // very first paint — in parallel with the SVG startup animation rather
+  // than after it.
+  const bgPrefetch = (
+    <video
+      src="/alt.mp4"
+      preload="auto"
+      muted
+      playsInline
+      aria-hidden
+      tabIndex={-1}
+      style={{
+        position: 'fixed',
+        width: 1,
+        height: 1,
+        opacity: 0,
+        pointerEvents: 'none',
+        top: -9999,
+        left: -9999,
+      }}
+    />
+  );
+
   // Show nothing during initial mount to prevent flash of wrong component
   if (!mounted) {
     return (
@@ -47,33 +71,14 @@ export default function Home() {
         alignItems: 'center',
         backgroundColor: 'rgb(245, 242, 231)',
       }}>
-        {/* Optional loading indicator if desired */}
+        {bgPrefetch}
       </div>
     );
   }
 
   return (
     <div>
-      {/* Pre-fetch the background video while the startup overlay is running,
-          so the bytes are in the browser cache by the time the card mounts
-          after the split. Hidden offscreen + aria-hidden / non-interactive. */}
-      <video
-        src="/alt.mp4"
-        preload="auto"
-        muted
-        playsInline
-        aria-hidden
-        tabIndex={-1}
-        style={{
-          position: 'fixed',
-          width: 1,
-          height: 1,
-          opacity: 0,
-          pointerEvents: 'none',
-          top: -9999,
-          left: -9999,
-        }}
-      />
+      {bgPrefetch}
       {showOverlay && (
         <TribalStartupOverlay onSplitStart={() => setShowCard(true)} />
       )}

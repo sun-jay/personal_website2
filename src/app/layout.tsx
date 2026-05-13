@@ -37,6 +37,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Kick off the background-video download during HTML parse, before any
+            JS has run. Pairs with the hidden <video preload="auto"> on the
+            homepage so the bytes are cached well before the card mounts. */}
+        <link rel="preload" as="video" type="video/mp4" href="/alt.mp4" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${pinyonScript.variable} antialiased`}
       >
