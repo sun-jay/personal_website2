@@ -22,8 +22,15 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   // Defer mounting the card components until the startup overlay's split
   // begins — that way the card's existing drop animation fires the moment
-  // the figure splits apart and reveals the page.
+  // the figure splits apart and reveals the page. Desktop skips the overlay
+  // entirely, so showCard starts true there.
   const [showCard, setShowCard] = useState(false);
+  // The tribal startup overlay is mobile-only.
+  const showOverlay = mounted && isMobile;
+  // Once we know we're on desktop, just show the card straight away.
+  useEffect(() => {
+    if (mounted && !isMobile) setShowCard(true);
+  }, [mounted, isMobile]);
 
   // Handle mounting state to prevent flash of wrong component
   useEffect(() => {
@@ -67,7 +74,9 @@ export default function Home() {
           left: -9999,
         }}
       />
-      <TribalStartupOverlay onSplitStart={() => setShowCard(true)} />
+      {showOverlay && (
+        <TribalStartupOverlay onSplitStart={() => setShowCard(true)} />
+      )}
       {showCard && (
         <>
           <div style={{ display: isMobile ? 'block' : 'none' }}>
