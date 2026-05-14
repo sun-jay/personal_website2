@@ -12,12 +12,7 @@ import KhoshnusTitle from './KhoshnusTitle';
 // the entrance reveal.
 const TITLE_INTRO_ENABLED = false;
 
-interface ScrollSnapRotatingCardDesktopProps {
-  /** If false, the card-drop entrance animation is deferred until this flips true. */
-  shouldDrop?: boolean;
-}
-
-const ScrollSnapRotatingCardDesktop = ({ shouldDrop = true }: ScrollSnapRotatingCardDesktopProps = {}) => {
+const ScrollSnapRotatingCardDesktop = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const titleContainerRef = useRef<HTMLDivElement>(null);
@@ -194,14 +189,11 @@ const ScrollSnapRotatingCardDesktop = ({ shouldDrop = true }: ScrollSnapRotating
   }, []); // Empty dependency array so it runs once on mount
 
   /* ------------  STARTUP ANIMATION  ------------ */
-  // Only run once, when shouldDrop becomes true.
-  const startedRef = useRef(false);
   useEffect(() => {
-    if (!shouldDrop || startedRef.current) return;
     const el = cardRef.current;
     if (!el) return;
-    startedRef.current = true;
 
+    // Small delay to ensure initial position is rendered first
     setTimeout(() => {
       animate(el, {
         rotateY: 360,
@@ -217,7 +209,7 @@ const ScrollSnapRotatingCardDesktop = ({ shouldDrop = true }: ScrollSnapRotating
         }
       });
     }, 50);
-  }, [shouldDrop]);
+  }, []);
 
   /* ------------  LAYOUT ------------ */
   const containerStyle: CSSProperties = {
