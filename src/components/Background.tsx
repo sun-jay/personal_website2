@@ -17,19 +17,27 @@ const VideoWithPlaceholder = ({
     className,
     style,
     placeholder,
+    forceFade = false,
 }: {
     src: string;
     className?: string;
     style?: React.CSSProperties;
     placeholder?: string;
+    /** When true, always run the fade-in even if the video is ready instantly. */
+    forceFade?: boolean;
 }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [videoLoaded, setVideoLoaded] = useState(false);
-    // If the bytes are already cached (from the homepage's <video preload="auto">
-    // pre-fetch), `loadeddata`/`canplay` fires almost instantly — in that case
-    // we skip the fade-in so the video appears seamlessly with the rest of the
-    // page. On slower connections, fall back to the normal fade-in.
+    // If the bytes are already cached (from the homepage's pre-fetch),
+    // `loadeddata`/`canplay` fires almost instantly. In that case we'd
+    // normally skip the fade-in for a seamless reveal — but if the caller
+    // wants the fade regardless (e.g. desktop, where the fade *is* the
+    // entrance) `forceFade` keeps the fade enabled.
     const [skipFade, setSkipFade] = useState(false);
+    const forceFadeRef = useRef(forceFade);
+    useEffect(() => {
+        forceFadeRef.current = forceFade;
+    }, [forceFade]);
 
     useEffect(() => {
         const video = videoRef.current;
@@ -43,7 +51,7 @@ const VideoWithPlaceholder = ({
                 settled = true;
                 const elapsed = performance.now() - startTime;
                 // <250ms from mount → effectively cached / ready; no fade.
-                if (elapsed < 250) setSkipFade(true);
+                if (elapsed < 250 && !forceFadeRef.current) setSkipFade(true);
                 setVideoLoaded(true);
             };
 
@@ -52,9 +60,9 @@ const VideoWithPlaceholder = ({
             video.load();
 
             // If the cached bytes are already decoded by the time we get here,
-            // skip straight to the loaded state with no fade.
+            // skip straight to the loaded state with no fade (unless forceFade).
             if (video.readyState >= 2) {
-                setSkipFade(true);
+                if (!forceFadeRef.current) setSkipFade(true);
                 markLoaded();
             }
 
@@ -124,12 +132,15 @@ interface BackgroundProps {
     src: string;
     placeholder?: string;
     borderRadius?: string;
+    /** When true, always run the fade-in even if the video is ready instantly. */
+    forceFade?: boolean;
 }
 
 export const Background = ({
     src,
     placeholder,
     borderRadius = "42px",
+    forceFade = false,
 }: BackgroundProps) => {
     const extension = getFileExtension(src);
     const isVideoFile = isVideo(extension);
@@ -151,6 +162,7 @@ export const Background = ({
                 src={src}
                 style={baseStyles}
                 placeholder={placeholder}
+                forceFade={forceFade}
             />
         );
     }

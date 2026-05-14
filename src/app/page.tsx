@@ -40,8 +40,13 @@ export default function Home() {
 
   // The Background video is rendered at the page level on every render
   // (including before `mounted` flips), so it starts loading + playing as
-  // soon as the page mounts. The startup overlay covers it during the SVG
-  // animation; the moment the overlay splits open the video is already there.
+  // soon as the page mounts.
+  //
+  // - On MOBILE the startup overlay covers it during the SVG animation; we
+  //   want it to appear instantly when the overlay splits open (no fade),
+  //   so leave forceFade=false (the cached-fast-path takes over).
+  // - On DESKTOP there's no overlay — the fade-in itself IS the entrance,
+  //   so force the fade even when the video loads instantly from cache.
   const bgLayer = (
     <div
       style={{
@@ -51,7 +56,11 @@ export default function Home() {
         pointerEvents: 'none',
       }}
     >
-      <Background src="/alt.mp4" borderRadius="0" />
+      <Background
+        src="/alt.mp4"
+        borderRadius="0"
+        forceFade={mounted && !isMobile}
+      />
     </div>
   );
 
