@@ -11,7 +11,12 @@ import KhoshnusTitle from './KhoshnusTitle';
 // Off by default because the tribal startup overlay already handles the reveal.
 const TITLE_INTRO_ENABLED = false;
 
-const AnimatedCard = () => {
+interface AnimatedCardProps {
+  /** If false, the card-drop entrance animation is deferred until this flips true. */
+  shouldDrop?: boolean;
+}
+
+const AnimatedCard = ({ shouldDrop = true }: AnimatedCardProps = {}) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const titleContainerRef = useRef<HTMLDivElement>(null);
@@ -165,11 +170,13 @@ const AnimatedCard = () => {
   }, []); // Empty dependency array so it runs once on mount
 
   /* ------------  STARTUP ANIMATION  ------------ */
+  const startedRef = useRef(false);
   useEffect(() => {
+    if (!shouldDrop || startedRef.current) return;
     const el = cardRef.current;
     if (!el) return;
+    startedRef.current = true;
 
-    // Small delay to ensure initial position is rendered first
     setTimeout(() => {
       animate(el, {
         rotateY: 360,
@@ -184,9 +191,8 @@ const AnimatedCard = () => {
           }, 1000);
         }
       });
-
     }, 50);
-  }, []);
+  }, [shouldDrop]);
 
   /* ------------  LAYOUT ------------ */
   const containerStyle: CSSProperties = {
