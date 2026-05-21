@@ -409,7 +409,7 @@ export default function TribalStrokeDraw({
       {/* Tightened viewBox — crops the empty padding around the figure so it
           renders larger inside whatever container it's given. */}
       <svg
-        viewBox="50 0 350 380"
+        viewBox="50 30 350 380"
         width={size}
         height={size}
         xmlns="http://www.w3.org/2000/svg"
