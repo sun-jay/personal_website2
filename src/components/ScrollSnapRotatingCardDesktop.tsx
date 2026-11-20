@@ -865,7 +865,7 @@ const ScrollSnapRotatingCardDesktop = () => {
                   style={berkeleyLogoStyle}
                 />
                 <div>
-                  <p style={{ fontWeight: 'bold', fontSize: '1em', marginBottom: '0.3em' }}>B.S. Applied Mathematics</p>
+                  <p style={{ fontWeight: 'bold', fontSize: '1em', marginBottom: '0.3em' }}>B.A. Statistics</p>
                   <p style={{ marginBottom: '0.2em', fontSize: '0.95em' }}>UC Berkeley</p>
                   <p style={{ fontSize: '0.9em' }}>Expected Graduation: 2027</p>
                 </div>

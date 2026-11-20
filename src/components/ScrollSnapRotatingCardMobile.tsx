@@ -788,7 +788,7 @@ const AnimatedCard = () => {
                   style={berkeleyLogoStyle}
                 />
                 <div>
-                  <p style={{ fontWeight: 'bold', fontStyle: 'italic', fontSize: '0.8375em', marginBottom: '0.25em' }}>B.S. Applied Mathematics</p>
+                  <p style={{ fontWeight: 'bold', fontStyle: 'italic', fontSize: '0.8375em', marginBottom: '0.25em' }}>B.A. Statistics</p>
                   <p style={{ marginBottom: '0.1875em', fontWeight: 'bold', }}>UC Berkeley</p>
                   <p style={{ marginBottom: '0.1875em', fontStyle: 'italic' }}>Expected Graduation: 2027</p>
                   {/* <p>GPA: 3.86</p> */}
